@@ -137,23 +137,23 @@ public class UsuarioManager {
         return null; // Usuario no encontrado o no tiene tweets
     }
 
-    public static String verTwettsUsuario(String username) {
-        Twits twitsUsuario = getTwitsDeUsuario(username);
-        if (twitsUsuario == null) {
-            return " no hay twetts";
-        }
-
-        Twit[] listaTwits = twitsUsuario.getTwits();
-        StringBuilder resultado = new StringBuilder();
-        for (int resul = twitsUsuario.getNumeroTwits() - 1; resul >= 0; resul++) {
-            Twit twit = listaTwits[resul];
-            if (twit != null) {
-                resultado.append(twit.getFechapublicacion()).append(" - ").append(twit.getContenido()).append("\n");
+     public static String verTwettsUsuario(String username) {
+        Twits twitsUsuario = obtenerTwitsUsuario(username);  // Asegúrate de que este método devuelva los Twits correctos
+            if (twitsUsuario == null) {
+                return "no hay tweets";  // Si no hay tweets, mostramos este mensaje
             }
+
+        // Recorrer los tweets del usuario y concatenarlos en un String
+        Twit[] listaTwits = twitsUsuario.getTwits();
+            StringBuilder resultado = new StringBuilder();
+            for (int i = twitsUsuario.getNumeroTwits() - 1; i >= 0; i--) {
+            Twit twit = listaTwits[i];
+                if (twit != null) {
+            resultado.append(twit.getFechapublicacion()).append(" - ").append(twit.getContenido()).append("\n");
         }
-        return resultado.toString();
     }
-    
+    return resultado.toString();  // Devolver los tweets concatenados
+}
     public static Twit[] obtenerTwitsQueMencionan(String username){
         Twit[] twitsQueMencionan = new Twit[500];
         int contadorMenciones = 0;

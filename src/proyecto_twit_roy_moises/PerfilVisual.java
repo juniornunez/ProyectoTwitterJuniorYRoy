@@ -1,5 +1,6 @@
 package proyecto_twit_roy_moises;
 
+import java.awt.Image;
 import javax.swing.*;
 
 /**
@@ -21,8 +22,9 @@ public class PerfilVisual extends javax.swing.JFrame {
      * @param usuarioActual El nombre del usuario que está usando la aplicación
      * @param username El nombre del usuario cuyo perfil estamos viendo
      */
-    public PerfilVisual(String usuarioActual) {
+    public PerfilVisual(String usuarioActual,String username) {
         this.usuarioActual = usuarioActual;
+        this.username = username;
         
         initComponents();
         this.setLocationRelativeTo(null);
@@ -34,43 +36,45 @@ public class PerfilVisual extends javax.swing.JFrame {
     /**
      * Método para cargar los datos del perfil del usuario seleccionado
      */
-    private void cargarDatosPerfil() {
-        int index = UsuarioManager.obtenerIndiceUsuario(username);
+  private void cargarDatosPerfil() {
+    // Obtener el índice del usuario cuyo perfil estamos viendo
+    int index = UsuarioManager.obtenerIndiceUsuario(username);
 
-        if (index == -1) {
-            JOptionPane.showMessageDialog(this, "Error: El usuario no fue encontrado.");
-            return;
-        }
-
-        // Obtener datos del usuario
-        String nombreCompleto = UsuarioManager.getNombres()[index];
-        String edad = UsuarioManager.getEdades()[index];
-        int numeroSeguidores = manejoPerfil.getNumFollowers()[index];
-        int numeroSiguiendo = manejoPerfil.getNumFollowing()[index];
-        String fechaIngreso = UsuarioManager.getFechasIngreso()[index].getTime().toString();
-        String tweetsUsuario = UsuarioManager.verTwettsUsuario(username);
-
-        // Mostrar los datos en los labels correspondientes
-        NombrePerfil.setText("Nombre: " + nombreCompleto);
-        UsernamePerfil.setText("@" + username);
-        Edad.setText(edad + " años");
-        Numero_Twetts.setText(String.valueOf(UsuarioManager.obtenerTwitsUsuario(username).getNumeroTwits()));
-        Numero_Seguidores.setText(String.valueOf(numeroSeguidores));
-        Numero_Siguiendo.setText(String.valueOf(numeroSiguiendo));
-        Fecha_Ingreso.setText("Fecha de Ingreso: " + fechaIngreso);
-
-        // Ver si el usuario actual sigue al usuario del perfil
-        if (manejoPerfil.sigueUsuario(usuarioActual, username)) {
-            SEGUIR_NOSEGUIR.setText("Dejar de seguir");
-            TESIGUE_NOTESIGUE.setText("Te sigue");
-        } else {
-            SEGUIR_NOSEGUIR.setText("Seguir");
-            TESIGUE_NOTESIGUE.setText("No te sigue");
-        }
-
-        // Cargar los tweets del usuario en el área de texto
-        Tweets_Usuario.setText(tweetsUsuario);
+    if (index == -1) {
+        JOptionPane.showMessageDialog(this, "Error: El usuario no fue encontrado.");
+        return;
     }
+
+    // Obtener datos del usuario
+    String nombreCompleto = UsuarioManager.getNombres()[index];
+    String edad = UsuarioManager.getEdades()[index];
+    int numeroSeguidores = manejoPerfil.getNumFollowers()[index];
+    int numeroSiguiendo = manejoPerfil.getNumFollowing()[index];
+    String fechaIngreso = UsuarioManager.getFechasIngreso()[index].getTime().toString();
+    
+    // Mostrar los datos en los labels correspondientes
+    NombrePerfil.setText("Nombre: " + nombreCompleto);
+    UsernamePerfil.setText("@" + username);
+    Edad.setText(edad + " años");
+    Numero_Twetts.setText(String.valueOf(UsuarioManager.obtenerTwitsUsuario(username).getNumeroTwits()));
+    Numero_Seguidores.setText(String.valueOf(numeroSeguidores));
+    Numero_Siguiendo.setText(String.valueOf(numeroSiguiendo));
+    Fecha_Ingreso.setText("Fecha de Ingreso: " + fechaIngreso);
+
+    // Ver si el usuario actual sigue al usuario del perfil
+    if (manejoPerfil.sigueUsuario(usuarioActual, username)) {
+        SEGUIR_NOSEGUIR.setText("Dejar de seguir");
+        TESIGUE_NOTESIGUE.setText("Te sigue");
+    } else {
+        SEGUIR_NOSEGUIR.setText("Seguir");
+        TESIGUE_NOTESIGUE.setText("No te sigue");
+    }
+
+    // Aquí obtenemos y mostramos los tweets del usuario
+    String tweetsUsuario = UsuarioManager.verTwettsUsuario(username);  // Este método debería devolver los tweets del usuario
+    Tweets_Usuario.setText(tweetsUsuario);  // Mostramos los tweets en el área de texto
+
+}
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -90,16 +94,12 @@ public class PerfilVisual extends javax.swing.JFrame {
         Edad = new javax.swing.JLabel();
         Fecha_Ingreso = new javax.swing.JLabel();
         REGRESARMENU = new javax.swing.JButton();
-        BUSUARIO = new javax.swing.JLabel();
-        EspaBusca = new javax.swing.JTextField();
-        Buscar = new javax.swing.JButton();
         imagen_perfil = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         txtTweets.setText("Twits del usuario");
 
-        NombrePerfil.setForeground(new java.awt.Color(0, 0, 0));
         NombrePerfil.setText("AQUI NOMBRE COMPLETO");
 
         txtxtwits.setForeground(new java.awt.Color(102, 102, 102));
@@ -151,76 +151,54 @@ public class PerfilVisual extends javax.swing.JFrame {
             }
         });
 
-        BUSUARIO.setText("Buscar Usuario: ");
-
-        Buscar.setText("Buscar");
-        Buscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BuscarActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(Tweets_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, 676, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(UsernamePerfil)
-                                .addComponent(Edad)
-                                .addComponent(Fecha_Ingreso)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(txtTweets)
-                                        .addComponent(NombrePerfil)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addContainerGap()
-                                            .addComponent(TESIGUE_NOTESIGUE)))
-                                    .addGap(77, 77, 77)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addGap(12, 12, 12)
-                                            .addComponent(Numero_Twetts, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(txtxtwits))
-                                    .addGap(68, 68, 68)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(SIGUIENDO)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addGap(20, 20, 20)
-                                            .addComponent(Numero_Siguiendo, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGap(67, 67, 67)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addGap(22, 22, 22)
-                                            .addComponent(Numero_Seguidores, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(SEGUIDORES)))
-                                .addComponent(imagen_perfil, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(28, 28, 28)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(REGRESARMENU, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(SEGUIR_NOSEGUIR, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(Tweets_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, 676, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(BUSUARIO)
-                        .addGap(30, 30, 30)
-                        .addComponent(EspaBusca, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(49, 49, 49)
-                        .addComponent(Buscar)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(UsernamePerfil)
+                            .addComponent(Edad)
+                            .addComponent(Fecha_Ingreso)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtTweets)
+                                    .addComponent(NombrePerfil)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(TESIGUE_NOTESIGUE)))
+                                .addGap(77, 77, 77)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(12, 12, 12)
+                                        .addComponent(Numero_Twetts, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txtxtwits))
+                                .addGap(68, 68, 68)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(SIGUIENDO)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(20, 20, 20)
+                                        .addComponent(Numero_Siguiendo, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(67, 67, 67)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(22, 22, 22)
+                                        .addComponent(Numero_Seguidores, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(SEGUIDORES)))
+                            .addComponent(imagen_perfil, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(REGRESARMENU, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(SEGUIR_NOSEGUIR, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(123, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(BUSUARIO)
-                    .addComponent(EspaBusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Buscar))
-                .addGap(74, 74, 74)
+                .addGap(136, 136, 136)
                 .addComponent(imagen_perfil, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(4, 4, 4)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -290,7 +268,11 @@ public class PerfilVisual extends javax.swing.JFrame {
     }//GEN-LAST:event_SEGUIR_NOSEGUIRActionPerformed
 
     private void REGRESARMENUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_REGRESARMENUActionPerformed
-    this.dispose();
+        if(menu != null){
+            menu.mostrarMenu();
+        }
+        this.dispose();
+        
     }//GEN-LAST:event_REGRESARMENUActionPerformed
 
     public void imagen_perfil(String username, JLabel label) {
@@ -324,27 +306,6 @@ public class PerfilVisual extends javax.swing.JFrame {
             System.out.println("Usuario no encontrado");
         }
     }
-
-    // boton buscar
-    private void BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuscarActionPerformed
-       if (EspaBusca.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "ERROR: espacio vacio, introduce un nombre para buscar.");
-            return;
-        }
-
-        String nombreCompleto = EspaBusca.getText().trim();
-        String[] NombresEncontrados = manejoPerfil.BuscarUsuario(nombreCompleto);
-
-        if (NombresEncontrados == null || NombresEncontrados.length == 0) {
-            JOptionPane.showMessageDialog(null, "No se encontró el perfil.");
-            return;
-        }
-
-        // Cargar el perfil del primer usuario encontrado
-        new PerfilVisual(usuarioActual, NombresEncontrados[0]).setVisible(true);
-        this.dispose();
-                     
-    }//GEN-LAST:event_BuscarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -382,10 +343,7 @@ public class PerfilVisual extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel BUSUARIO;
-    private javax.swing.JButton Buscar;
     private javax.swing.JLabel Edad;
-    private javax.swing.JTextField EspaBusca;
     private javax.swing.JLabel Fecha_Ingreso;
     private javax.swing.JLabel NombrePerfil;
     private javax.swing.JLabel Numero_Seguidores;

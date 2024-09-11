@@ -51,10 +51,10 @@ public class VisualEditar extends javax.swing.JFrame {
     }
 
     private void abrirPerfil(String username) {
-        PerfilVisual perfil = new PerfilVisual(username); // Pasar el username al constructor de PerfilVisual
-        perfil.setVisible(true); // Mostrar la nueva ventana del perfil
-        this.dispose(); // Cerrar la ventana actual
-    }
+    PerfilVisual perfil = new PerfilVisual(usuarioActual, username); // Pasar usuarioActual y username
+    perfil.setVisible(true); // Mostrar la nueva ventana del perfil
+    this.dispose(); // Cerrar la ventana actual
+}
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -64,7 +64,6 @@ public class VisualEditar extends javax.swing.JFrame {
         Busc = new javax.swing.JLabel();
         EsBucarUser = new javax.swing.JTextField();
         BuscarEnter = new javax.swing.JButton();
-        EntrarPerfil = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         RegresarMenu = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -91,13 +90,6 @@ public class VisualEditar extends javax.swing.JFrame {
             }
         });
 
-        EntrarPerfil.setText("Entrar a un perfil");
-        EntrarPerfil.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EntrarPerfilActionPerformed(evt);
-            }
-        });
-
         RegresarMenu.setText("Regresar Menu");
         RegresarMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -120,16 +112,15 @@ public class VisualEditar extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(ImagenNombreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ImagenNombreLayout.createSequentialGroup()
-                        .addComponent(RegresarMenu)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(EntrarPerfil))
                     .addGroup(ImagenNombreLayout.createSequentialGroup()
-                        .addComponent(Busc)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(EsBucarUser, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(BuscarEnter)
+                        .addGroup(ImagenNombreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(RegresarMenu)
+                            .addGroup(ImagenNombreLayout.createSequentialGroup()
+                                .addComponent(Busc)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(EsBucarUser, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(BuscarEnter)))
                         .addGap(0, 100, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(ImagenNombreLayout.createSequentialGroup()
@@ -150,9 +141,7 @@ public class VisualEditar extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                .addGroup(ImagenNombreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(EntrarPerfil)
-                    .addComponent(RegresarMenu))
+                .addComponent(RegresarMenu)
                 .addContainerGap())
         );
 
@@ -176,27 +165,31 @@ public class VisualEditar extends javax.swing.JFrame {
     }//GEN-LAST:event_EsBucarUserActionPerformed
 
     private void BuscarEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuscarEnterActionPerformed
- if (EsBucarUser.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "no puedes buscar a alguien sin haber ingresado texto");
-            return;
+  if (EsBucarUser.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(null, "No puedes buscar a alguien sin haber ingresado texto");
+        return;
+    }
+
+    String nombreUsuario = EsBucarUser.getText().trim();
+
+    // Llamada al método de búsqueda
+    String[] usuariosEncontrados = BuscarUsuario(nombreUsuario);
+
+    // Limpiar los resultados previos en la lista
+    listModel.clear(); 
+
+    // Verificar si se encontraron usuarios
+    if (usuariosEncontrados.length > 0) {
+        // Mostrar los usuarios encontrados en la lista
+        for (String usuario : usuariosEncontrados) {
+            String estadoSeguimiento = manejoPerfil.sigueUsuario(usuarioActual, usuario) ? "LO SIGO" : "NO LO SIGUES";
+            listModel.addElement(usuario + " | " + estadoSeguimiento);
         }
-
-        String nombreUsuario = EsBucarUser.getText().trim();
-
-        String[] usuariosEncontrados = BuscarUsuario(nombreUsuario);
-
-        listModel.clear(); // Limpiar los resultados previos
-
-        if (usuariosEncontrados.length > 0) {
-            for (String usuario : usuariosEncontrados) {
-                String estadoSeguimiento = manejoPerfil.sigueUsuario(usuarioActual, usuario) ? "LO SIGO" : "NO LO SIGUES";
-                listModel.addElement(usuario + " | " + estadoSeguimiento);
-            }
-        } else {
-            listModel.addElement("No se encontraron usuarios.");
-        }
+    } else {
+        // Solo mostrar el mensaje de error si no se encontraron usuarios
+        JOptionPane.showMessageDialog(null, "Error: El usuario no fue encontrado.");
     }//GEN-LAST:event_BuscarEnterActionPerformed
-
+    }
     private void RegresarMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegresarMenuActionPerformed
         
       MenuPrincipal.getMenu(usuarioActual);
@@ -207,14 +200,6 @@ public class VisualEditar extends javax.swing.JFrame {
 
         this.setVisible(false);
     }//GEN-LAST:event_RegresarMenuActionPerformed
-
-    private void EntrarPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EntrarPerfilActionPerformed
-            PerfilVisual perfil = new PerfilVisual(usuarioActual);
-        perfil.setVisible(true);
-        this.dispose();
-
-
-    }//GEN-LAST:event_EntrarPerfilActionPerformed
 
     /**
      * @param args the command line arguments
@@ -256,7 +241,6 @@ public class VisualEditar extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Busc;
     private javax.swing.JButton BuscarEnter;
-    private javax.swing.JButton EntrarPerfil;
     private javax.swing.JTextField EsBucarUser;
     private javax.swing.JPanel ImagenNombre;
     private javax.swing.JButton RegresarMenu;

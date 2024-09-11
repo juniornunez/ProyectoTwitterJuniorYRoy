@@ -140,7 +140,7 @@ public class MenuPrincipal {
         Editar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.setVisible(false);
+                
                 VisualEditar ventanaEditar = new VisualEditar(UsuarioActual);
                 ventanaEditar.setVisible(true);
 
@@ -344,13 +344,11 @@ public class MenuPrincipal {
         espacioPanel.repaint();
     }
 
-    private void cerrarSesion() {
+    private void cerrarSesion() { 
         new LogIn();
         frame.dispose();
     }
 
-    void setVisible(boolean b) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
 
 }
