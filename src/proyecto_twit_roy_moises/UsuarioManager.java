@@ -1,18 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package proyecto_twit_roy_moises;
 
-import java.util.Date;
 import java.util.Calendar;
 
-//  sirve para la revision que gestione la lista de usuarios
-// esta clase se encargara de almacenar y verificar los nombres de usuario y la constrasena.
-/**
- *
- * @author royum
- */
 public class UsuarioManager {
 
     private static final int MAX_USUARIOS = 500;
@@ -21,75 +10,22 @@ public class UsuarioManager {
     private static String[] passwords = new String[MAX_USUARIOS];
     private static String[] generos = new String[MAX_USUARIOS];
     private static String[] edades = new String[MAX_USUARIOS];
-    private static Calendar[] FechasIngreso =  new Calendar[MAX_USUARIOS];
-    private static Twits[] twitsPorUsuario = new Twits[MAX_USUARIOS]; // Array para almacenar los twits por usuario
-    private static Twits[] twitsUsuarios = new Twits[MAX_USUARIOS]; // Nuevo arreglo para manejar los tweets de cada usuario
-    private static boolean[] estadosActivacion = new boolean[MAX_USUARIOS]; // Estado de activación: true = activo, false = desactivado
+    private static Calendar[] FechasIngreso = new Calendar[MAX_USUARIOS];
+    private static Twits[] twitsPorUsuario = new Twits[MAX_USUARIOS];
+    private static Twits[] twitsUsuarios = new Twits[MAX_USUARIOS];
+    private static boolean[] estadosActivacion = new boolean[MAX_USUARIOS];
 
-    public static Calendar[] getFechasIngreso() {
-        return FechasIngreso;
-    }
+    // Arrays para almacenar seguidores y seguidos
+    private static String[][] seguidores = new String[MAX_USUARIOS][MAX_USUARIOS];
+    private static String[][] seguidos = new String[MAX_USUARIOS][MAX_USUARIOS];
+    private static int[] numSeguidores = new int[MAX_USUARIOS];
+    private static int[] numSeguidos = new int[MAX_USUARIOS];
 
     private static int contador = 0;
 
-    public static void Cambiarestadocuenta(int index, boolean estado) {
-        estadosActivacion[index] = estado;
-    }
-
-    public static boolean UsuarioActivo(String username) {
-        int index = obtenerIndiceUsuario(username);
-        return index != -1 && estadosActivacion[index];
-    }
-
-    // Metodo para obtener el indice de un usuario basado en su username
-    public static int obtenerIndiceUsuario(String username) {
-        for (int obten = 0; obten < contador; obten++) {
-            if (usernames[obten] != null && usernames[obten].equals(username)) {
-                return obten;
-            }
-        }
-        return -1;
-    }
-
-    // Agrega un nuevo usuario con una contraseña y las guarda
-    public static boolean agregarUsuario(String nombre, String username, String password, String genero, String edad, Calendar FechaIngreso) {
-        if (contador >= MAX_USUARIOS) {
-            return false; // No hay espacio para mas usuarios
-        }
-        for (int exis = 0; exis < contador; exis++) {
-            if (usernames[exis] != null && usernames[exis].equals(username)) {
-                return false; // El usuario ya existe
-            }
-        }
-        nombres[contador] = nombre;
-        usernames[contador] = username;
-        passwords[contador] = password; // Guardar la contraseña
-        generos[contador] = genero;
-        edades[contador] = edad;
-        FechasIngreso[contador] = FechaIngreso;
-        twitsUsuarios[contador] = new Twits(); // Inicializar el objeto Twits para este usuario
-        contador++;
-        return true;
-    }
-
-    // Verifica si el nombre de usuario existe
-    public static boolean usuarioExiste(String username) {
-        for (int no = 0; no < contador; no++) {
-            if (usernames[no] != null && usernames[no].equals(username)) {
-                return true; // El usuario existe
-            }
-        }
-        return false; // El usuario no existe
-    }
-
-    // Verifica si el nombre de usuario y la contraseña coinciden
-    public static boolean autenticar(String username, String password) {
-        for (int au = 0; au < contador; au++) {
-            if (usernames[au] != null && usernames[au].equals(username) && passwords[au] != null && passwords[au].equals(password)) {
-                return true; // Autenticacion exitosa
-            }
-        }
-        return false; // Autenticacion fallida
+    // Métodos getter
+    public static Calendar[] getFechasIngreso() {
+        return FechasIngreso;
     }
 
     public static String[] getEdades() {
@@ -104,126 +40,259 @@ public class UsuarioManager {
         return generos;
     }
 
-    // Obtiene los usernames de los usuarios
     public static String[] getUsernames() {
         return usernames;
     }
 
-    // Obtiene el contador de usuarios
     public static int getContador() {
         return contador;
     }
 
-    // obtenemos los twits del usuario
-    public static Twits getTwitsDeUsuario(String username) {
-        for (int twits = 0; twits < contador; twits++) {
-            if (usernames[twits] != null && usernames[twits].equals(username)) {
-                return twitsPorUsuario[twits];
-            }
+    // Cambiar el estado de la cuenta (activa o inactiva)
+    public static void Cambiarestadocuenta(int index, boolean estado) {
+        estadosActivacion[index] = estado; // Cambia el estado del usuario (activo/inactivo)
+}
 
+    public static boolean UsuarioActivo(String username) {
+    int index = obtenerIndiceUsuario(username);
+    return index != -1 && estadosActivacion[index]; // Verifica si la cuenta está activa
+}
+
+    // Buscar el índice del usuario en el arreglo
+    public static int obtenerIndiceUsuario(String username) {
+        for (int i = 0; i < contador; i++) {
+            if (usernames[i] != null && usernames[i].equals(username)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Agregar un nuevo usuario
+    public static boolean agregarUsuario(String nombre, String username, String password, String genero, String edad, Calendar FechaIngreso) {
+        if (contador >= MAX_USUARIOS) {
+            return false;
+        }
+        for (int i = 0; i < contador; i++) {
+            if (usernames[i] != null && usernames[i].equals(username)) {
+                return false;
+            }
+        }
+        nombres[contador] = nombre;
+        usernames[contador] = username;
+        passwords[contador] = password;
+        generos[contador] = genero;
+        edades[contador] = edad;
+        FechasIngreso[contador] = FechaIngreso;
+        twitsUsuarios[contador] = new Twits();
+        numSeguidores[contador] = 0;
+        numSeguidos[contador] = 0;
+        estadosActivacion[contador] = true;  // La cuenta empieza como activa
+        contador++;
+        return true;
+    }
+
+    // Verificar si un usuario existe
+    public static boolean usuarioExiste(String username) {
+        for (int i = 0; i < contador; i++) {
+            if (usernames[i] != null && usernames[i].equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Autenticar un usuario
+    public static boolean autenticar(String username, String password) {
+        for (int i = 0; i < contador; i++) {
+            if (usernames[i] != null && usernames[i].equals(username) && passwords[i] != null && passwords[i].equals(password)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Obtener los twits de un usuario
+    public static Twits getTwitsDeUsuario(String username) {
+        for (int i = 0; i < contador; i++) {
+            if (usernames[i] != null && usernames[i].equals(username)) {
+                return twitsPorUsuario[i];
+            }
         }
         return null;
     }
 
-    // NO BORRAR ESTA FUNCIONNNN!!!!!!!!!!!!!!!!!!!!!
-    // Metodo para obtener los tweets de un usuario especifico
     public static Twits obtenerTwitsUsuario(String username) {
-        for (int obtenertwi = 0; obtenertwi < contador; obtenertwi++) {
-            if (usernames[obtenertwi] != null && usernames[obtenertwi].equals(username)) {
-                return twitsUsuarios[obtenertwi];
+        for (int i = 0; i < contador; i++) {
+            if (usernames[i] != null && usernames[i].equals(username)) {
+                return twitsUsuarios[i];
             }
-
         }
-        return null; // Usuario no encontrado o no tiene tweets
+        return null;
     }
 
-     public static String verTwettsUsuario(String username) {
-        Twits twitsUsuario = obtenerTwitsUsuario(username);  // Asegúrate de que este método devuelva los Twits correctos
-            if (twitsUsuario == null) {
-                return "no hay tweets";  // Si no hay tweets, mostramos este mensaje
-            }
+    public static String verTwettsUsuario(String username) {
+        Twits twitsUsuario = obtenerTwitsUsuario(username);
+        if (twitsUsuario == null) {
+            return "No hay tweets.";
+        }
 
-        // Recorrer los tweets del usuario y concatenarlos en un String
         Twit[] listaTwits = twitsUsuario.getTwits();
-            StringBuilder resultado = new StringBuilder();
-            for (int i = twitsUsuario.getNumeroTwits() - 1; i >= 0; i--) {
+        StringBuilder resultado = new StringBuilder();
+        for (int i = twitsUsuario.getNumeroTwits() - 1; i >= 0; i--) {
             Twit twit = listaTwits[i];
-                if (twit != null) {
-            resultado.append(twit.getFechapublicacion()).append(" - ").append(twit.getContenido()).append("\n");
+            if (twit != null) {
+                resultado.append(twit.getFechapublicacion()).append(" - ").append(twit.getContenido()).append("\n");
+            }
+        }
+        return resultado.toString();
+    }
+
+    // Métodos para seguir y dejar de seguir usuarios
+   public static boolean seguirUsuario(String usuarioActual, String usuarioASeguir) {
+    int indiceActual = obtenerIndiceUsuario(usuarioActual);
+    int indiceObjetivo = obtenerIndiceUsuario(usuarioASeguir);
+
+    if (indiceActual == -1 || indiceObjetivo == -1) {
+        return false; // Si alguno de los usuarios no existe
+    }
+
+    // Verificar si ya sigue al usuario
+    for (int i = 0; i < numSeguidos[indiceActual]; i++) {
+        if (seguidos[indiceActual][i] != null && seguidos[indiceActual][i].equals(usuarioASeguir)) {
+            return false; // Ya sigue a este usuario
         }
     }
-    return resultado.toString();  // Devolver los tweets concatenados
+
+    // Si no lo sigue, agregarlo a la lista de seguidos y actualizar el contador
+    seguidos[indiceActual][numSeguidos[indiceActual]] = usuarioASeguir;
+    numSeguidos[indiceActual]++;
+
+    // También incrementar el número de seguidores del usuario objetivo
+    seguidores[indiceObjetivo][numSeguidores[indiceObjetivo]] = usuarioActual;
+    numSeguidores[indiceObjetivo]++;
+
+    return true;
 }
-    public static Twit[] obtenerTwitsQueMencionan(String username){
-        Twit[] twitsQueMencionan = new Twit[500];
-        int contadorMenciones = 0;
-        
-        for (int Mencion = 0; Mencion < contador; Mencion++) {
-            if(twitsUsuarios[Mencion] != null){
-                for (int mencionJOTA = 0; mencionJOTA < twitsUsuarios[Mencion].getNumeroTwits(); mencionJOTA++) {
-                    Twit twit = twitsUsuarios[Mencion].getTwits()[mencionJOTA];
-                    if(twit != null && twit.MencionUsuario(username)){
-                        twitsQueMencionan[contadorMenciones] = twit;
-                        contadorMenciones++;
+
+public static boolean dejarDeSeguirUsuario(String usuarioActual, String usuarioADejar) {
+    int indiceActual = obtenerIndiceUsuario(usuarioActual);
+    int indiceObjetivo = obtenerIndiceUsuario(usuarioADejar);
+
+    if (indiceActual == -1 || indiceObjetivo == -1) {
+        return false; // Si alguno de los usuarios no existe
+    }
+
+    // Buscar y eliminar de la lista de seguidos
+    for (int i = 0; i < numSeguidos[indiceActual]; i++) {
+        if (seguidos[indiceActual][i] != null && seguidos[indiceActual][i].equals(usuarioADejar)) {
+            // Mover el último elemento al lugar del eliminado
+            seguidos[indiceActual][i] = seguidos[indiceActual][numSeguidos[indiceActual] - 1];
+            seguidos[indiceActual][numSeguidos[indiceActual] - 1] = null;
+            numSeguidos[indiceActual]--;
+
+            // También disminuir el número de seguidores del usuario objetivo
+            for (int j = 0; j < numSeguidores[indiceObjetivo]; j++) {
+                if (seguidores[indiceObjetivo][j].equals(usuarioActual)) {
+                    seguidores[indiceObjetivo][j] = seguidores[indiceObjetivo][numSeguidores[indiceObjetivo] - 1];
+                    seguidores[indiceObjetivo][numSeguidores[indiceObjetivo] - 1] = null;
+                    numSeguidores[indiceObjetivo]--;
+                    break;
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}
+    public static boolean sigueUsuario(String usuarioActual, String usuarioObjetivo) {
+    int indiceActual = obtenerIndiceUsuario(usuarioActual);
+    int indiceObjetivo = obtenerIndiceUsuario(usuarioObjetivo);
+
+    if (indiceActual == -1 || indiceObjetivo == -1) {
+        return false; // Si alguno de los usuarios no existe
+    }
+
+    // Verificar si el usuarioActual sigue al usuarioObjetivo
+    for (int i = 0; i < numSeguidos[indiceActual]; i++) {
+        if (seguidos[indiceActual][i] != null && seguidos[indiceActual][i].equals(usuarioObjetivo)) {
+            return true; // Ya sigue al usuario
+        }
+    }
+    return false; // No sigue al usuario
+}
+
+    public static int obtenerNumSeguidores(String username) {
+        int index = obtenerIndiceUsuario(username);
+        return numSeguidores[index];
+    }
+
+    public static int obtenerNumSeguidos(String username) {
+        int index = obtenerIndiceUsuario(username);
+        return numSeguidos[index];
+    }
+
+    // Obtener la lista de usuarios seguidos
+    public static String[] obtenerUsuariosSeguidos(String usuarioActual) {
+        int indiceActual = obtenerIndiceUsuario(usuarioActual);
+        if (indiceActual == -1) {
+            return new String[0]; // Retorna un arreglo vacío si el usuario no existe
+        }
+
+        // Retornar solo los usuarios seguidos, eliminando las entradas nulas
+        String[] usuariosSeguidos = new String[numSeguidos[indiceActual]];
+        System.arraycopy(seguidos[indiceActual], 0, usuariosSeguidos, 0, numSeguidos[indiceActual]);
+        return usuariosSeguidos;
+    }
+
+    // Eliminar todos los seguidos y seguidores cuando se desactiva la cuenta
+    public static void eliminarSeguidosYSeguidores(String username) {
+        int indiceActual = obtenerIndiceUsuario(username);
+
+        if (indiceActual == -1) {
+            return;
+        }
+
+        // Eliminar de la lista de seguidores
+        for (int i = 0; i < numSeguidores[indiceActual]; i++) {
+            String seguidor = seguidores[indiceActual][i];
+            int indiceSeguidor = obtenerIndiceUsuario(seguidor);
+
+            if (indiceSeguidor != -1) {
+                for (int j = 0; j < numSeguidos[indiceSeguidor]; j++) {
+                    if (seguidos[indiceSeguidor][j].equals(username)) {
+                        seguidos[indiceSeguidor][j] = seguidos[indiceSeguidor][numSeguidos[indiceSeguidor] - 1];
+                        seguidos[indiceSeguidor][numSeguidos[indiceSeguidor] - 1] = null;
+                        numSeguidos[indiceSeguidor]--;
                     }
-                    
                 }
             }
         }
-        
-        
-        
-        Twit[] resultado = new Twit[contadorMenciones];
-        System.arraycopy(twitsQueMencionan, 0, resultado, 0, contadorMenciones);
-        return resultado;
-    }
 
-//AGREGANDO DESDE AQUI 5 DE SEP JUNIOR NUÑEZ
-  
-    // Método para agregar usuarios (solo para ejemplos de prueba)
-    public static void agregarUsuario(String username) {
-        if (contador < MAX_USUARIOS) {
-            usernames[contador] = username;
-            contador++;
-        } else {
-            System.out.println("No se pueden agregar más usuarios.");
-        }
-    }
+        // Eliminar la lista de seguidos de este usuario
+        for (int i = 0; i < numSeguidos[indiceActual]; i++) {
+            String seguido = seguidos[indiceActual][i];
+            int indiceSeguido = obtenerIndiceUsuario(seguido);
 
-    // Método para buscar usuarios en el arreglo de usernames
-    public static String[] buscarUsuario(String termino) {
-        // Array temporal para almacenar los resultados
-        String[] resultados = new String[MAX_USUARIOS];
-        int contadorResultados = 0;
-
-        // Recorremos el array de usernames para buscar coincidencias
-        for (int i = 0; i < contador; i++) {
-            if (usernames[i] != null && usernames[i].toLowerCase().contains(termino.toLowerCase())) {
-                // Si hay coincidencia, lo agregamos a los resultados
-                resultados[contadorResultados] = usernames[i];
-                contadorResultados++;
+            if (indiceSeguido != -1) {
+                for (int j = 0; j < numSeguidores[indiceSeguido]; j++) {
+                    if (seguidores[indiceSeguido][j].equals(username)) {
+                        seguidores[indiceSeguido][j] = seguidores[indiceSeguido][numSeguidores[indiceSeguido] - 1];
+                        seguidores[indiceSeguido][numSeguidores[indiceSeguido] - 1] = null;
+                        numSeguidores[indiceSeguido]--;
+                    }
+                }
             }
         }
-
-        // Devolvemos solo los resultados no nulos
-        return java.util.Arrays.copyOf(resultados, contadorResultados);
-    }
-
-    // Método para mostrar resultados
-    public static void mostrarResultados(String termino) {
-        String[] resultados = buscarUsuario(termino);
-        if (resultados.length > 0) {
-            System.out.println("Usuarios encontrados:");
-            for (String usuario : resultados) {
-                System.out.println(usuario);
-            }
-        } else {
-            System.out.println("No se encontraron usuarios con el término: " + termino);
+        // Limpiar las listas del usuario actual
+        for (int i = 0; i < numSeguidores[indiceActual]; i++) {
+            seguidores[indiceActual][i] = null;
         }
-        // En tu clase UsuarioManager, ya tendrás la lista de usuarios guardados
-    UsuarioManager.mostrarResultados("Roy");
+        numSeguidores[indiceActual] = 0;
 
+        for (int i = 0; i < numSeguidos[indiceActual]; i++) {
+            seguidos[indiceActual][i] = null;
+        }
+        numSeguidos[indiceActual] = 0;
     }
-
-
 }

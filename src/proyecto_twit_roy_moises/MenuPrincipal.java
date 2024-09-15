@@ -34,6 +34,7 @@ public class MenuPrincipal {
         this.twits = UsuarioManager.obtenerTwitsUsuario(UsuarioActual);
         if (this.twits == null) {
             this.twits = new Twits();
+            
         }
 
         initUI();
@@ -41,11 +42,11 @@ public class MenuPrincipal {
     }
 
     public static MenuPrincipal getMenu(String UsuarioActual) {
-        if (menu == null) {
-            menu = new MenuPrincipal(UsuarioActual);
-        }
-        return menu;
+    if (menu == null) {
+        menu = new MenuPrincipal(UsuarioActual);  // Solo crea una nueva instancia si no existe
     }
+    return menu;
+}
 
     public void mostrarMenu() {
         if (frame != null) {
@@ -63,21 +64,17 @@ public class MenuPrincipal {
         JPanel mainPanel = new JPanel(new BorderLayout());
         frame.add(mainPanel);
 
-        // Panel de botones de navegación
+        // Panel de botones de navegacion
         JPanel navPanel = new JPanel();
         navPanel.setLayout(new GridLayout(1, 6, 10, 10)); // Seis botones en una fila
         navPanel.setBackground(Color.lightGray);
 
-        JButton timelineButton = new JButton("Timeline");
-        JButton tweetButton = new JButton("Mandar Tweet");
         JButton InteraccionesBoton = new JButton("Interacciones");
         JButton Editar = new JButton("Editar Perfil");
         JButton BuscarHash = new JButton("Buscar Hashtags");
         JButton logoutButton = new JButton("Cerrar Sesion");
 
-        // Añadir botones al panel de navegación
-        navPanel.add(timelineButton);
-        navPanel.add(tweetButton);
+        // Añadir botones al panel de navegacion
         navPanel.add(InteraccionesBoton);
         navPanel.add(Editar);
         navPanel.add(BuscarHash);
@@ -123,29 +120,16 @@ public class MenuPrincipal {
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         // Configuracion de los botones de navegacin
-        timelineButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mostrarTimeline();
-            }
-        });
-
-        tweetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mandarTweet();
-            }
-        });
 
         Editar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                VisualEditar ventanaEditar = new VisualEditar(UsuarioActual);
-                ventanaEditar.setVisible(true);
-
-            }
-        });
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Abrir la ventana MiPerfil con los datos del usuario actual
+        MiPerfil miPerfilVentana = new MiPerfil(UsuarioActual);  // Pasar el nombre de usuario actual
+        miPerfilVentana.setVisible(true);
+        frame.dispose();  // Cerrar la ventana actual
+    }
+});
 
         BuscarHash.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -192,7 +176,7 @@ public class MenuPrincipal {
                 } else {
                     letrasContadasLabel.setForeground(Color.BLACK);
                 }
-                resaltarHashtags(); // Resaltar hashtags en tiempo real
+                resaltarHashtags(); // Resaltar hashtags 
                 resaltarArroba();
             }
         });
@@ -289,7 +273,7 @@ public class MenuPrincipal {
             // Crear JTextPane para el tweet
             JTextPane tweetPane = new JTextPane();
             tweetPane.setEditable(false);
-            tweetPane.setText(twit.getUsername() + " escribio: “ " + twit.getContenido() + " ” |publicado el " + twit.getFechapublicacion() + "|.");
+            tweetPane.setText(twit.getUsername() + " escribio: “ " + twit.getContenido() + " ” \npublicado el " + twit.getFechapublicacion() + ".");
 
             // Establecer el estilo de documento para hashtags
             StyledDocument doc = tweetPane.getStyledDocument();
@@ -344,11 +328,14 @@ public class MenuPrincipal {
         espacioPanel.repaint();
     }
 
-    private void cerrarSesion() { 
-        new LogIn();
-        frame.dispose();
+    private void cerrarSesion() {
+        int confirmacion = JOptionPane.showConfirmDialog(frame, "¿Estas seguro de que deseas cerrar sesion?", 
+                                                     "Confirmar cierre de sesión", JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                
+        if(confirmacion == JOptionPane.YES_OPTION){
+            new LogIn();
+            frame.dispose();
+        }
     }
-
-    
 
 }

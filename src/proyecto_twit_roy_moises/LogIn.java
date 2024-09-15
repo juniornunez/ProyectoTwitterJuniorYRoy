@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package proyecto_twit_roy_moises;
 
 import javax.swing.*;
@@ -26,7 +22,7 @@ public class LogIn {
         initUI();
     }
 
-    // insatancia creada.
+    // Instancia Singleton.
     public static LogIn getInstancia() {
         if (instancia == null) {
             instancia = new LogIn();
@@ -34,16 +30,18 @@ public class LogIn {
         return instancia;
     }
 
-    // instacia para mostrar el log in. 
+    // Método para mostrar el formulario de inicio de sesión
     public void mostrarLog() {
         if (frame != null) {
             frame.setVisible(true);
         }
     }
 
-    // ocultar el 
-    public void OcultarLog() {
-        frame.setVisible(false);
+    // Método para ocultar el formulario de inicio de sesión
+    public void ocultarLog() {
+        if (frame != null) {
+            frame.setVisible(false);
+        }
     }
 
     public static void main(String[] args) {
@@ -98,7 +96,7 @@ public class LogIn {
         JButton crearCuentaButton = new JButton("¡Click aqui, Crea tu cuenta!");
         crearCuentaButton.setForeground(new Color(30, 144, 255));
         crearCuentaButton.setBackground(Color.WHITE);
-        crearCuentaButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        crearCuentaButton.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         crearCuentaButton.setFont(new Font("Roboto", Font.BOLD, 14));
         crearCuentaButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelEntrada.add(crearCuentaButton);
@@ -152,7 +150,7 @@ public class LogIn {
                 System.exit(0); // Salir del programa
             }
         });
-        //hola
+
         frame.setVisible(true); 
     }
 
@@ -200,6 +198,12 @@ public class LogIn {
                 frame.dispose();
 
             }
+        }
+    }
+
+    public void setVisible(boolean visible) {
+        if (frame != null) {
+            frame.setVisible(visible);
         }
     }
 }

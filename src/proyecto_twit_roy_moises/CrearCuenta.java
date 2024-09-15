@@ -1,15 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package proyecto_twit_roy_moises;
 
-import javax.swing.*; // libreria de swing
+import javax.swing.*; // librería de swing
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
-import java.text.SimpleDateFormat;
 
 /**
  *
@@ -31,21 +26,21 @@ public class CrearCuenta {
     private String[] usernames;
 
     public CrearCuenta() {
-        usernames = new String[1000]; 
+        usernames = new String[1000];
         initUI();
     }
-    
+
     // instancia creada
-    public static CrearCuenta getInstancia2(){
-        if(instancia2 == null){
+    public static CrearCuenta getInstancia2() {
+        if (instancia2 == null) {
             instancia2 = new CrearCuenta();
         }
         return instancia2;
     }
-    
+
     // mostrarframe de crear cuenta
-    public void MostrarCrearCuenta(){
-        if(frame !=null){
+    public void MostrarCrearCuenta() {
+        if (frame != null) {
             frame.setVisible(true);
         }
     }
@@ -67,34 +62,34 @@ public class CrearCuenta {
         panel.setBackground(Color.white);
         frame.add(panel);
 
-        // Configuracion de las etiquetas y campos de entrada
+        // Configuración de las etiquetas y campos de entrada
         panel.add(crearCampo("Nombre:", nombreField = new JTextField()));
         panel.add(crearCampo("Genero:", generoComboBox = new JComboBox(new String[]{"Masculino", "Femenino"})));
         panel.add(crearCampo("Username:", usernameField = new JTextField()));
         panel.add(crearCampo("Contraseña:", passwordField = new JPasswordField()));
         panel.add(crearCampo("Edad:", edadField = new JTextField()));
-        
+
         fechaIngresoField = new JTextField();
         fechaIngresoField.setEditable(false);
-        panel.add(crearCampo("Fecha Ingreso: ",fechaIngresoField));
-        
+        panel.add(crearCampo("Fecha Ingreso: ", fechaIngresoField));
+
         generarFechaButton = new JButton("Generar Fecha");
         generarFechaButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(Box.createVerticalStrut(10));
         panel.add(generarFechaButton);
-        
-        generarFechaButton.addActionListener(new ActionListener(){
-            
-            public void actionPerformed(ActionEvent e){
-                Calendar fechaActual = Calendar.getInstance(); 
+
+        generarFechaButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                Calendar fechaActual = Calendar.getInstance();
                 fechaIngresoField.setText(fechaActual.get(Calendar.DAY_OF_MONTH) + "/"
-                        + (fechaActual.get(Calendar.MONTH)+1 )+ "/"
-                        + fechaActual.get(Calendar.YEAR)+ " "
-                        + fechaActual.get(Calendar.HOUR_OF_DAY)+ ":"
-                        + fechaActual.get(Calendar.MINUTE)+ ":"
+                        + (fechaActual.get(Calendar.MONTH) + 1) + "/"
+                        + fechaActual.get(Calendar.YEAR) + " "
+                        + fechaActual.get(Calendar.HOUR_OF_DAY) + ":"
+                        + fechaActual.get(Calendar.MINUTE) + ":"
                         + fechaActual.get(Calendar.SECOND));
             }
-            
+
         });
 
         JButton registerButton = new JButton("Crear Cuenta");
@@ -116,7 +111,7 @@ public class CrearCuenta {
             }
         });
 
-        // Accion del boton Registrar
+        // Acción del botón Registrar
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -148,62 +143,63 @@ public class CrearCuenta {
         return panel;
     }
 
-    private void jButton1ActionPerformed() {
-        String nombre = nombreField.getText().trim();
-        String genero = (String) generoComboBox.getSelectedItem();
-        String nombreUsuario = usernameField.getText().trim();
-        String contrasena = new String(passwordField.getPassword()).trim();
-        String edadText = edadField.getText().trim();
-        String fechaIngreso  = fechaIngresoField.getText().trim();
+private void jButton1ActionPerformed() {
+    String nombre = nombreField.getText().trim();
+    String genero = (String) generoComboBox.getSelectedItem();
+    String nombreUsuario = usernameField.getText().trim();
+    String contrasena = new String(passwordField.getPassword()).trim();
+    String edadText = edadField.getText().trim();
+    String fechaIngreso  = fechaIngresoField.getText().trim();
 
-        // Validación de campos vacíos
-        if (nombre.isEmpty() || genero == null || nombreUsuario.isEmpty() || contrasena.isEmpty() || edadText.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Todos los campos deben ser completados.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // aqui Validacion de la edad   
-        int edad;
-        try {
-            edad = Integer.parseInt(edadText);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "La edad debe ser un numero entero valido.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (edad < 18 || edad > 90) {
-            JOptionPane.showMessageDialog(null, "La edad que ingreso no es valida por ser menor de edad (+18) o ingreso un numero no valido, limite de 90.", "Error", JOptionPane.ERROR_MESSAGE);
-            return; // Este return hace que no se registre con exito si se excede el número
-        }
-
-         if (!UsuarioManager.usuarioExiste(nombreUsuario)) {
-            // Agregar nuevo usuario
-            Calendar fechaIngresoCalendario = Calendar.getInstance();
-            try {
-                String[] partesFecha = fechaIngreso.split("[/ :]");
-                int dia = Integer.parseInt(partesFecha[0]);
-                int mes = Integer.parseInt(partesFecha[1])- 1;
-                int anio = Integer.parseInt(partesFecha[2]);
-                int hora = Integer.parseInt(partesFecha[3]);
-                int minuto = Integer.parseInt(partesFecha[4]);
-                int segundors = Integer.parseInt(partesFecha[5]);
-                
-                fechaIngresoCalendario.set(anio, mes, dia, hora, minuto);
-                
-                if (UsuarioManager.agregarUsuario(nombre, nombreUsuario, contrasena, genero, String.valueOf(edad), fechaIngresoCalendario)) {
-                    JOptionPane.showMessageDialog(null, "Usuario registrado con exito.", "Exito", JOptionPane.INFORMATION_MESSAGE);
-                    LogIn log = LogIn.getInstancia();
-                    frame.dispose();
-                    new LogIn();
-                } else {
-                    JOptionPane.showMessageDialog(null, "El usuario no pudo ser registrado. Intentalo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Error al procesar la fecha de ingreso.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "El usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    // Validación de campos vacíos
+    if (nombre.isEmpty() || genero == null || nombreUsuario.isEmpty() || contrasena.isEmpty() || edadText.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Todos los campos deben ser completados.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
     }
 
+    // Validación de la edad   
+    int edad;
+    try {
+        edad = Integer.parseInt(edadText);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(null, "La edad debe ser un número entero válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (edad < 18 || edad > 90) {
+        JOptionPane.showMessageDialog(null, "La edad que ingresó no es válida. Debe ser mayor de 18 y menor de 90.", "Error", JOptionPane.ERROR_MESSAGE);
+        return; // Este return hace que no se registre con éxito si se excede el número
+    }
+
+    if (!UsuarioManager.usuarioExiste(nombreUsuario)) {
+        // Agregar nuevo usuario
+        Calendar fechaIngresoCalendario = Calendar.getInstance();
+        try {
+            String[] partesFecha = fechaIngreso.split("[/ :]");
+            int dia = Integer.parseInt(partesFecha[0]);
+            int mes = Integer.parseInt(partesFecha[1]) - 1;
+            int anio = Integer.parseInt(partesFecha[2]);
+            int hora = Integer.parseInt(partesFecha[3]);
+            int minuto = Integer.parseInt(partesFecha[4]);
+            int segundo = Integer.parseInt(partesFecha[5]);
+            
+            fechaIngresoCalendario.set(anio, mes, dia, hora, minuto);
+
+            if (UsuarioManager.agregarUsuario(nombre, nombreUsuario, contrasena, genero, String.valueOf(edad), fechaIngresoCalendario)) {
+                JOptionPane.showMessageDialog(null, "Usuario registrado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                // Aquí se realiza el login automático: Redirigir al menú principal
+                MenuPrincipal menu = new MenuPrincipal(nombreUsuario); // Pasamos el username al menú principal
+                menu.mostrarMenu(); // Mostrar el menú principal
+                frame.dispose(); // Cerrar la ventana de creación de cuenta
+            } else {
+                JOptionPane.showMessageDialog(null, "El usuario no pudo ser registrado. Inténtalo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error al procesar la fecha de ingreso.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } else {
+        JOptionPane.showMessageDialog(null, "El usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
 }
