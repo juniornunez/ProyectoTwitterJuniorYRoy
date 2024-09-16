@@ -22,8 +22,12 @@ public class UsuarioManager {
     private static int[] numSeguidos = new int[MAX_USUARIOS];
 
     private static int contador = 0;
-
+    private static String[][] seguidoresGuardados = new String[MAX_USUARIOS][MAX_USUARIOS];
+    private static String[][] seguidosGuardados = new String[MAX_USUARIOS][MAX_USUARIOS];
+    private static int[] numSeguidoresGuardados = new int[MAX_USUARIOS];
+    private static int[] numSeguidosGuardados = new int[MAX_USUARIOS];
     // Métodos getter
+    
     public static Calendar[] getFechasIngreso() {
         return FechasIngreso;
     }
@@ -222,15 +226,15 @@ public static boolean dejarDeSeguirUsuario(String usuarioActual, String usuarioA
     return false; // No sigue al usuario
 }
 
-    public static int obtenerNumSeguidores(String username) {
-        int index = obtenerIndiceUsuario(username);
-        return numSeguidores[index];
-    }
+   public static int obtenerNumSeguidores(String username) {
+    int index = obtenerIndiceUsuario(username);
+    return numSeguidores[index];
+}
 
-    public static int obtenerNumSeguidos(String username) {
-        int index = obtenerIndiceUsuario(username);
-        return numSeguidos[index];
-    }
+public static int obtenerNumSeguidos(String username) {
+    int index = obtenerIndiceUsuario(username);
+    return numSeguidos[index];
+}
 
     // Obtener la lista de usuarios seguidos
     public static String[] obtenerUsuariosSeguidos(String usuarioActual) {
@@ -244,7 +248,9 @@ public static boolean dejarDeSeguirUsuario(String usuarioActual, String usuarioA
         System.arraycopy(seguidos[indiceActual], 0, usuariosSeguidos, 0, numSeguidos[indiceActual]);
         return usuariosSeguidos;
     }
+    
 
+    // Eliminar todos los seguidos y seguidores cuando se desactiva la cuenta
     // Eliminar todos los seguidos y seguidores cuando se desactiva la cuenta
     public static void eliminarSeguidosYSeguidores(String username) {
         int indiceActual = obtenerIndiceUsuario(username);
@@ -252,7 +258,14 @@ public static boolean dejarDeSeguirUsuario(String usuarioActual, String usuarioA
         if (indiceActual == -1) {
             return;
         }
-
+        
+        // aqui se copia los seguidores y seguidos a la copia de seguridad antes de eliminar 
+        System.arraycopy(seguidores[indiceActual], 0, seguidoresGuardados[indiceActual], 0, numSeguidores[indiceActual]);
+        System.arraycopy(seguidos[indiceActual], 0, seguidosGuardados[indiceActual], 0, numSeguidos[indiceActual]);
+        numSeguidoresGuardados[indiceActual] = numSeguidores[indiceActual];
+        numSeguidosGuardados[indiceActual] = numSeguidos[indiceActual];
+        
+        
         // Eliminar de la lista de seguidores
         for (int i = 0; i < numSeguidores[indiceActual]; i++) {
             String seguidor = seguidores[indiceActual][i];
@@ -294,5 +307,48 @@ public static boolean dejarDeSeguirUsuario(String usuarioActual, String usuarioA
             seguidos[indiceActual][i] = null;
         }
         numSeguidos[indiceActual] = 0;
+    }
+
+    // funcion para restaurar a los seguidos y seguidores cuando activo la cuenta
+    public static void restaurarSeguidosYSeguidores(String username) {
+        int indiceActual = obtenerIndiceUsuario(username);
+
+        if (indiceActual == -1) {
+            return;
+        }
+
+        // aqui se restaurara los seguidores desde la copia de seguridad
+        for (int restauraSeguidores = 0; restauraSeguidores < numSeguidoresGuardados[indiceActual]; restauraSeguidores++) {
+            String seguidorActivado = seguidoresGuardados[indiceActual][restauraSeguidores];
+            int indiceSeguidor = obtenerIndiceUsuario(seguidorActivado);
+
+            if (indiceSeguidor != -1) {
+                seguidores[indiceActual][restauraSeguidores] = seguidorActivado;
+                numSeguidores[indiceActual]++;
+
+                // aqui anadimos este usuario a la lista de seguidos del seguidor
+                seguidos[indiceSeguidor][numSeguidos[indiceSeguidor]] = username;
+                numSeguidos[indiceSeguidor]++;
+
+            }
+
+        }
+
+        // aqui se restaurara los seguidos desde la copia de seguridad
+        for (int restauraSeguidos = 0; restauraSeguidos < numSeguidosGuardados[indiceActual]; restauraSeguidos++) {
+            String seguidoActivo = seguidosGuardados[indiceActual][restauraSeguidos];
+            int indiceSeguido = obtenerIndiceUsuario(seguidoActivo);
+
+            if (indiceSeguido != -1) {
+                seguidos[indiceActual][restauraSeguidos] = seguidoActivo;
+                numSeguidos[indiceActual]++;
+
+                seguidores[indiceSeguido][numSeguidores[indiceSeguido]] = username;
+                numSeguidores[indiceSeguido]++;
+
+            }
+
+        }
+
     }
 }

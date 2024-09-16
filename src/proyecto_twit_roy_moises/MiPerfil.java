@@ -42,14 +42,21 @@ public class MiPerfil extends javax.swing.JFrame {
         String edad = UsuarioManager.getEdades()[index];
         String genero = UsuarioManager.getGeneros()[index]; // Obtener el género del usuario
         String tweets = UsuarioManager.verTwettsUsuario(username);
+        int numeroSeguidores = manejoPerfil.getNumFollowers()[index];
+        int numeroSiguiendo = manejoPerfil.getNumFollowing()[index];
+        String fechaIngreso = UsuarioManager.getFechasIngreso()[index].getTime().toString();
 
-        // Mostrar los datos en los campos correspondientes
+        
+        numfollowers.setText(String.valueOf(numeroSeguidores));
+        numfollowing.setText(String.valueOf(numeroSiguiendo));
         jLabel1.setText(nombre);
+        FechaIngreso.setText("Fecha de Ingreso: " + fechaIngreso);
         usernamelbl.setText(username);
         Edadlbl.setText(edad + " años");
         jTextArea1.setText(tweets);
         jTextArea1.setLineWrap(true);  // Ajustar el texto para que se vea correctamente en líneas
         jTextArea1.setWrapStyleWord(true);
+        
     }
 
     private void cargarImagenPerfil(String username) {
@@ -93,17 +100,28 @@ public class MiPerfil extends javax.swing.JFrame {
     /**
      * Método para actualizar el número de seguidores (followers) y seguidos (following)
      */
-        private void actualizarSeguidoresYSeguidos() {
-    int followers = UsuarioManager.obtenerNumSeguidores(usuarioActual);
-    int following = UsuarioManager.obtenerNumSeguidos(usuarioActual);
+ public void actualizarSeguidoresYSeguidosMiPerfil() {
+    // Obtener el índice del usuario actual
+    int index = UsuarioManager.obtenerIndiceUsuario(usuarioActual);
 
-    // Actualiza los campos sin usar String.valueOf()
-    numfollowers.setText("" + followers);  // Concatenación con cadena vacía
-    numfollowing.setText("" + following);  // Concatenación con cadena vacía
+    if (index != -1) {
+        // Obtener el número de seguidores y seguidos
+        int numSeguidores = UsuarioManager.obtenerNumSeguidores(usuarioActual);
+        int numSiguiendo = UsuarioManager.obtenerNumSeguidos(usuarioActual);
+
+        // Actualizar los JLabel en la interfaz
+        numfollowers.setText("" + numSeguidores);  // Convertir a String usando concatenación
+        numfollowing.setText("" + numSiguiendo);   // Convertir a String usando concatenación
+
+       
+    } else {
+        JOptionPane.showMessageDialog(this, "Error al obtener los datos del usuario.");
+    }
 }
-        
-    public void actualizarListaUsuariosSeguidos() {
-     String[] usuariosSeguidos = UsuarioManager.obtenerUsuariosSeguidos(usuarioActual);
+
+// Actualización de la lista de seguidos
+public void actualizarListaUsuariosSeguidos() {
+    String[] usuariosSeguidos = UsuarioManager.obtenerUsuariosSeguidos(usuarioActual);
 
     // Limpia la lista antes de actualizarla
     listModel.clear();
@@ -124,11 +142,11 @@ public class MiPerfil extends javax.swing.JFrame {
     usersxd.setModel(listModel);
 }
 
-   private void seguirUsuario(String usernameASeguir) {
+  private void seguirUsuario(String usernameASeguir) {
     boolean resultado = UsuarioManager.seguirUsuario(usuarioActual, usernameASeguir);
     if (resultado) {
         JOptionPane.showMessageDialog(this, "Ahora sigues a " + usernameASeguir);
-        actualizarSeguidoresYSeguidos();  // Actualiza los valores después de seguir
+        actualizarSeguidoresYSeguidosMiPerfil();  // Actualiza los valores después de seguir
         actualizarListaUsuariosSeguidos();  // Actualiza la lista de usuarios seguidos en la UI
     } else {
         JOptionPane.showMessageDialog(this, "Hubo un error al seguir al usuario.");
@@ -139,26 +157,14 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
     boolean resultado = UsuarioManager.dejarDeSeguirUsuario(usuarioActual, usernameADejar);
     if (resultado) {
         JOptionPane.showMessageDialog(this, "Has dejado de seguir a " + usernameADejar);
-        actualizarSeguidoresYSeguidos();  // Actualiza los valores después de dejar de seguir
+        actualizarSeguidoresYSeguidosMiPerfil();  // Actualiza los valores después de dejar de seguir
         actualizarListaUsuariosSeguidos();  // Actualiza la lista de usuarios seguidos en la UI
     } else {
         JOptionPane.showMessageDialog(this, "Hubo un error al dejar de seguir al usuario.");
     }
 }
 
-    private void desactivarCuenta() {
-        int indice = UsuarioManager.obtenerIndiceUsuario(usuarioActual);
-
-        if (indice != -1) {
-            UsuarioManager.Cambiarestadocuenta(indice, false);
-            UsuarioManager.eliminarSeguidosYSeguidores(usuarioActual);
-
-            JOptionPane.showMessageDialog(null, "Tu cuenta ha sido desactivada.");
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(null, "Error al desactivar la cuenta.");
-        }
-    }
+   
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -168,7 +174,6 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
         Edadlbl = new javax.swing.JLabel();
         Mistweetslbl = new javax.swing.JLabel();
         Volvermenuxd = new javax.swing.JButton();
-        Desactivarcuenta = new javax.swing.JButton();
         buscarusuariobtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         usersxd = new javax.swing.JList<>();
@@ -182,8 +187,10 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jLabel5 = new javax.swing.JLabel();
+        FechaIngreso = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1000, 800));
 
         jLabel1.setText("Nombrepropiolbl");
 
@@ -197,13 +204,6 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
         Volvermenuxd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 VolvermenuxdActionPerformed(evt);
-            }
-        });
-
-        Desactivarcuenta.setText("Desactivar");
-        Desactivarcuenta.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DesactivarcuentaActionPerformed(evt);
             }
         });
 
@@ -235,111 +235,110 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
         jTextArea1.setRows(5);
         jScrollPane2.setViewportView(jTextArea1);
 
-        jLabel5.setText("jLabel5");
+        jLabel5.setText("Edad:");
+
+        FechaIngreso.setText("jLabel6");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(Desactivarcuenta)
-                .addGap(44, 44, 44))
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(Mistweetslbl)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(232, 232, 232)
-                                .addComponent(Volvermenuxd))
-                            .addGroup(layout.createSequentialGroup()
                                 .addGap(15, 15, 15)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(pfppersonal, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(usernamelbl, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel5)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(Edadlbl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel2)
-                                        .addGap(97, 97, 97)
-                                        .addComponent(jLabel3))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(25, 25, 25)
-                                        .addComponent(numfollowers)
-                                        .addGap(139, 139, 139)
-                                        .addComponent(numfollowing)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(77, 77, 77)
-                                        .addComponent(Ingresaruser, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(buscarusuariobtn, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGap(18, 18, 18)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(12, Short.MAX_VALUE))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(pfppersonal, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addComponent(jLabel5)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(Edadlbl, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(FechaIngreso))
+                                            .addGap(129, 129, 129)
+                                            .addComponent(jLabel2))
+                                        .addComponent(jLabel1))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(usernamelbl))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(numfollowers)
+                                .addGap(19, 19, 19)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(139, 139, 139)
+                                .addComponent(numfollowing))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(108, 108, 108)
+                                .addComponent(jLabel3))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(Mistweetslbl)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Volvermenuxd)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(buscarusuariobtn, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(Ingresaruser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(225, 225, 225)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3)
-                                    .addComponent(Ingresaruser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(87, 87, 87)
-                                .addComponent(pfppersonal, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel1)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(numfollowers)
-                                    .addComponent(numfollowing)
-                                    .addComponent(buscarusuariobtn))
-                                .addGap(32, 32, 32))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel4)
-                                    .addComponent(usernamelbl))
-                                .addGap(18, 18, 18)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Edadlbl)
-                            .addComponent(jLabel5)))
+                        .addGap(228, 228, 228)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(Desactivarcuenta)
-                        .addGap(159, 159, 159)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(Mistweetslbl)
+                        .addGap(87, 87, 87)
+                        .addComponent(pfppersonal, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel1)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(109, 109, 109)
-                        .addComponent(Volvermenuxd))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(numfollowers)
+                            .addComponent(numfollowing))
+                        .addGap(36, 36, 36))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(usernamelbl))
+                        .addGap(18, 18, 18)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(Edadlbl))
+                        .addGap(45, 45, 45)
+                        .addComponent(FechaIngreso)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Mistweetslbl)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(Ingresaruser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(buscarusuariobtn)))
+                        .addGap(18, 67, Short.MAX_VALUE)
+                        .addComponent(Volvermenuxd)))
                 .addGap(53, 53, 53))
         );
 
@@ -347,42 +346,75 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buscarusuariobtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarusuariobtnActionPerformed
-          String nombreUsuario = Ingresaruser.getText().trim(); // Aquí tomamos el nombre desde el campo de texto
+    String nombreUsuario = Ingresaruser.getText().trim(); // Aquí tomamos el nombre desde el campo de texto
 
     if (!nombreUsuario.isEmpty()) {
+        // Buscar todos los usuarios cuyo nombre contenga el texto ingresado
+        String[] usuariosEncontrados = manejoPerfil.BuscarUsuario(nombreUsuario);  // Buscar usuarios que contengan el texto
         int index = UsuarioManager.obtenerIndiceUsuario(nombreUsuario);
+        
+        
+        
+        if (usuariosEncontrados.length > 0) {
+            DefaultListModel<String> listModel = new DefaultListModel<>();  // Modelo para la lista
 
-        if (index != -1) {
-            // Verificar si la cuenta está activa antes de mostrar el usuario
-            boolean estaActiva = UsuarioManager.UsuarioActivo(nombreUsuario);
-            if (!estaActiva) {
-                JOptionPane.showMessageDialog(this, "La cuenta de " + nombreUsuario + " no esta activa.");
-                return; // Salimos del método si la cuenta está desactivada
+            for (String usuarioEncontrado : usuariosEncontrados) {
+                // Verificar si la cuenta está activa antes de mostrar el usuario
+                boolean estaActiva = UsuarioManager.UsuarioActivo(usuarioEncontrado);
+                if (!estaActiva) {
+                    // Si la cuenta no está activa, no mostramos este usuario
+                    continue;
+                }
+                // Verifica si el usuario actual sigue al usuario encontrado
+                boolean loSigo = manejoPerfil.sigueUsuario(usuarioActual, usuarioEncontrado);
+
+                // Usamos operador ternario para determinar si mostrar "LO SIGO" o "NO LO SIGO"
+                String estadoSeguimiento = loSigo ? "[LO SIGO]" : "[NO LO SIGO]";
+
+                // Agregar el usuario y su estado a la lista
+                listModel.addElement(usuarioEncontrado + " – " + estadoSeguimiento);
             }
 
-            // Verifica si el usuario actual sigue al otro usuario
-            boolean loSigo = UsuarioManager.sigueUsuario(usuarioActual, nombreUsuario);
-
-            // Si el usuario existe, agregarlo a la lista y mostrar su estado (si lo sigues o no)
-            DefaultListModel listModel = new DefaultListModel();
-            String estadoSeguimiento = "NO LO SIGO";
-            if (loSigo) {
-                estadoSeguimiento = "LO SIGO";
-            }
-            listModel.addElement(nombreUsuario + " [" + estadoSeguimiento + "]");
-            usersxd.setModel(listModel); // Aquí añadimos el usuario encontrado a la lista
-
-            // Actualizar el número de personas que el usuario actual sigue
-            int numSiguiendo = UsuarioManager.obtenerNumSeguidos(usuarioActual);
-            numfollowing.setText("" + numSiguiendo); // Aquí actualizamos el JLabel con el nuevo número de seguidos
+            // Mostrar la lista actualizada en el componente JList
+            usersxd.setModel(listModel); // Aquí mostramos los usuarios encontrados en la lista
 
         } else {
-            JOptionPane.showMessageDialog(null, "Usuario no encontrado.");
+            JOptionPane.showMessageDialog(null, "No se encontraron usuarios con ese nombre.");
         }
     } else {
         JOptionPane.showMessageDialog(null, "Por favor, introduce un nombre de usuario.");
     }
+/**  String nombreUsuario = Ingresaruser.getText().trim(); // Aquí tomamos el nombre desde el campo de texto
 
+if (!nombreUsuario.isEmpty()) {
+    int index = UsuarioManager.obtenerIndiceUsuario(nombreUsuario);
+    
+    if (index != -1) {
+        // Verificar si la cuenta está activa antes de mostrar el usuario
+        boolean estaActiva = UsuarioManager.UsuarioActivo(nombreUsuario);
+        if (!estaActiva) {
+            JOptionPane.showMessageDialog(this, "La cuenta de " + nombreUsuario + " no está activa.");
+            return; // Salimos del método si la cuenta está desactivada
+        }
+
+        // Verifica si el usuario actual sigue al otro usuario
+        boolean loSigo = manejoPerfil.sigueUsuario(usuarioActual, nombreUsuario);
+
+        // Usamos operador ternario para determinar si mostrar "LO SIGO" o "NO LO SIGO"
+        String estadoSeguimiento = loSigo ? "[LO SIGO]" : "[NO LO SIGO]";
+
+        // Si el usuario existe, agregarlo a la lista y mostrar su estado
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        listModel.addElement(nombreUsuario + " " + estadoSeguimiento);
+        usersxd.setModel(listModel); // Aquí añadimos el usuario encontrado a la lista
+
+    } else {
+        JOptionPane.showMessageDialog(null, "Usuario no encontrado.");
+    }
+} else {
+    JOptionPane.showMessageDialog(null, "Por favor, introduce un nombre de usuario.");
+}
+* **/
     }//GEN-LAST:event_buscarusuariobtnActionPerformed
 
     private void VolvermenuxdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VolvermenuxdActionPerformed
@@ -390,32 +422,6 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
         menu.mostrarMenu();
         this.dispose();
     }//GEN-LAST:event_VolvermenuxdActionPerformed
-
-    private void DesactivarcuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DesactivarcuentaActionPerformed
-    int respuesta = JOptionPane.showConfirmDialog(this,
-            "¿Está seguro de que desea desactivar su cuenta?",
-            "Confirmar Desactivación",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
-
-    if (respuesta == JOptionPane.YES_OPTION) {
-        // Obtener el índice del usuario actual
-        int index = UsuarioManager.obtenerIndiceUsuario(usuarioActual);
-
-        // Desactivar la cuenta
-        UsuarioManager.Cambiarestadocuenta(index, false);
-
-        // Eliminar todos los seguidores y seguidos
-        UsuarioManager.eliminarSeguidosYSeguidores(usuarioActual);
-
-        JOptionPane.showMessageDialog(this, "Su cuenta ha sido desactivada con éxito.");
-        
-        // Redirigir a la pantalla de inicio de sesión (LogIn)
-        LogIn login = new LogIn();  // Crea una nueva instancia del formulario de LogIn
-        login.setVisible(true);     // Muestra la ventana de LogIn
-        this.dispose();           
-    }
-    }//GEN-LAST:event_DesactivarcuentaActionPerformed
   
     /**
      * Acción para buscar un usuario y mostrar su perfil.
@@ -477,8 +483,8 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Desactivarcuenta;
     private javax.swing.JLabel Edadlbl;
+    private javax.swing.JLabel FechaIngreso;
     private javax.swing.JTextField Ingresaruser;
     private javax.swing.JLabel Mistweetslbl;
     private javax.swing.JButton Volvermenuxd;

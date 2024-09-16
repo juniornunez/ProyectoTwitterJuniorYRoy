@@ -66,19 +66,20 @@ public class manejoPerfil {
     }
 
     public static boolean seguirUsuario(String usuarioActual, String usuarioObjetivo) {
-        if (!sigueUsuario(usuarioActual, usuarioObjetivo)) {
-            int indiceActual = obtenerIndiceUsuario(usuarioActual);
-            int indiceObjetivo = obtenerIndiceUsuario(usuarioObjetivo);
+    if (!sigueUsuario(usuarioActual, usuarioObjetivo)) {
+        int indiceActual = obtenerIndiceUsuario(usuarioActual);
+        int indiceObjetivo = obtenerIndiceUsuario(usuarioObjetivo);
 
-            if (indiceActual != -1 && indiceObjetivo != -1 && cuentasActivas[indiceObjetivo]) {
-                following[indiceActual][numFollowing[indiceActual]] = usuarioObjetivo;
-                numFollowing[indiceActual]++;
-                numFollowers[indiceObjetivo]++;
-                return true; // El seguimiento se realizó con éxito
-            }
+        if (indiceActual != -1 && indiceObjetivo != -1 && cuentasActivas[indiceObjetivo]) {
+            following[indiceActual][numFollowing[indiceActual]] = usuarioObjetivo;
+            numFollowing[indiceActual]++;  // Incrementar el número de seguidos
+            numFollowers[indiceObjetivo]++; // Incrementar el número de seguidores del usuario objetivo
+            System.out.println("Following: " + numFollowing[indiceActual] + " | Followers: " + numFollowers[indiceObjetivo]); // Mensaje para depuración
+            return true; // Seguimiento exitoso
         }
-        return false; // No se pudo seguir al usuario
     }
+    return false; // No se pudo seguir al usuario
+}
 
     public static String[] BuscarUsuario(String username) {
         String[] usernames = UsuarioManager.getUsernames(); 

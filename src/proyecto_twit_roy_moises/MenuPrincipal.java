@@ -53,6 +53,7 @@ public class MenuPrincipal {
             frame.setVisible(true);
         }
     }
+    
 
     private void initUI() {
         frame = new JFrame("Menu Principal");
@@ -127,7 +128,8 @@ public class MenuPrincipal {
         // Abrir la ventana MiPerfil con los datos del usuario actual
         MiPerfil miPerfilVentana = new MiPerfil(UsuarioActual);  // Pasar el nombre de usuario actual
         miPerfilVentana.setVisible(true);
-        frame.dispose();  // Cerrar la ventana actual
+        frame.setVisible(false);  // Cerrar la ventana actual
+        
     }
 });
 
@@ -273,7 +275,7 @@ public class MenuPrincipal {
             // Crear JTextPane para el tweet
             JTextPane tweetPane = new JTextPane();
             tweetPane.setEditable(false);
-            tweetPane.setText(twit.getUsername() + " escribio: “ " + twit.getContenido() + " ” \npublicado el " + twit.getFechapublicacion() + ".");
+            tweetPane.setText(twit.getUsername() + " escribio: “ " + twit.getContenido() + " ” \npublicado el " + twit.getFechapublicacion() + ".\n-------------------------------------------------------------------------------------------------------");
 
             // Establecer el estilo de documento para hashtags
             StyledDocument doc = tweetPane.getStyledDocument();

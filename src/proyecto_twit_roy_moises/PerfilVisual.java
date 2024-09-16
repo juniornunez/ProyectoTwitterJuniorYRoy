@@ -136,21 +136,18 @@ public class PerfilVisual extends javax.swing.JFrame {
         txtxtwits.setText("Tweets");
 
         Numero_Twetts.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
-        Numero_Twetts.setForeground(new java.awt.Color(0, 255, 255));
         Numero_Twetts.setText("0");
 
         SIGUIENDO.setForeground(new java.awt.Color(102, 102, 102));
         SIGUIENDO.setText("Siguiendo");
 
         Numero_Siguiendo.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
-        Numero_Siguiendo.setForeground(new java.awt.Color(0, 255, 255));
         Numero_Siguiendo.setText("0");
 
         SEGUIDORES.setForeground(new java.awt.Color(102, 102, 102));
         SEGUIDORES.setText("Seguidores");
 
         Numero_Seguidores.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
-        Numero_Seguidores.setForeground(new java.awt.Color(0, 255, 255));
         Numero_Seguidores.setText("0");
 
         SEGUIR_NOSEGUIR.setBackground(new java.awt.Color(0, 204, 153));
@@ -301,9 +298,29 @@ public class PerfilVisual extends javax.swing.JFrame {
             SEGUIR_NOSEGUIR.setText("Seguir");
         }
     }
+ public void actualizarSeguidoresYSeguidos() {
+    // Obtener el índice del usuario cuyo perfil estamos viendo
+    int index = UsuarioManager.obtenerIndiceUsuario(username);
+
+    if (index != -1) {
+        // Obtener el número de seguidores y seguidos
+        int numSeguidores = manejoPerfil.getNumFollowers()[index];
+        int numSiguiendo = manejoPerfil.getNumFollowing()[index];
+
+        // Actualizar los JLabel en la interfaz
+        Numero_Seguidores.setText("" + numSeguidores);  // Convertir a String usando concatenación
+        Numero_Siguiendo.setText("" + numSiguiendo);    // Convertir a String usando concatenación
+    } else {
+        // Manejar el caso donde el índice no es válido
+        JOptionPane.showMessageDialog(this, "Error al obtener los datos del usuario.");
+    }
+}
     private void SEGUIR_NOSEGUIRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SEGUIR_NOSEGUIRActionPerformed
+          // Actualizar el perfil una vez que el usuario sigue o deja de seguir a otro
+    miPerfil.actualizarSeguidoresYSeguidosMiPerfil();  // Asegúrate de actualizar los contadores visuales
+
     if (manejoPerfil.sigueUsuario(usuarioActual, username)) {
-        // Mostrar un cuadro de confirmación antes de dejar de seguir
+        // Confirmación antes de dejar de seguir
         int confirmacion = JOptionPane.showConfirmDialog(this,
                 "¿Quieres dejar de seguir a " + username + "?",
                 "Confirmación",
@@ -313,19 +330,15 @@ public class PerfilVisual extends javax.swing.JFrame {
         if (confirmacion == JOptionPane.YES_OPTION) {
             manejoPerfil.dejarDeSeguirUsuario(usuarioActual, username);
             actualizarBotonSeguir(username);
-            miPerfil.actualizarListaUsuariosSeguidos(); // Actualiza la lista en MiPerfil
+            miPerfil.actualizarListaUsuariosSeguidos(); // Actualizar lista de seguidos en MiPerfil
+            actualizarSeguidoresYSeguidos();  // Actualizar seguidores y seguidos en PerfilVisual
         }
     } else {
         manejoPerfil.seguirUsuario(usuarioActual, username);
         actualizarBotonSeguir(username);
-        miPerfil.actualizarListaUsuariosSeguidos(); // Actualiza la lista en MiPerfil
+        miPerfil.actualizarListaUsuariosSeguidos(); // Actualizar lista de seguidos en MiPerfil
+        actualizarSeguidoresYSeguidos();  // Actualizar seguidores y seguidos en PerfilVisual
     }
-
-    // Actualizar el número de seguidores y seguidos
-    int index = UsuarioManager.obtenerIndiceUsuario(username);
-    Numero_Seguidores.setText(String.valueOf(manejoPerfil.getNumFollowers()[index]));
-    Numero_Siguiendo.setText(String.valueOf(manejoPerfil.getNumFollowing()[index]));
-    miPerfil.actualizarListaUsuariosSeguidos();
     }//GEN-LAST:event_SEGUIR_NOSEGUIRActionPerformed
 
     private void REGRESARMENUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_REGRESARMENUActionPerformed
