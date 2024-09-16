@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
  */
 public class BuscarHashtag {
 
+    private String usuarioActual;
     private JTextField campoHashtag;
     private JButton botonBuscar;
     private JButton botonRegresar;
@@ -26,10 +27,10 @@ public class BuscarHashtag {
     public BuscarHashtag(Twits twits, MenuPrincipal menu) {
         this.todosLosTwits = twits;
         this.menu = menu;
-        initUI();
+        InicioDelHashtag();
     }
 
-    private void initUI() {
+    private void InicioDelHashtag() {
         JFrame frame = new JFrame("Buscar Hashtag");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(700, 500);
@@ -69,7 +70,7 @@ public class BuscarHashtag {
         frame.setVisible(true);
     }
 
-    private void buscarHashtag() {
+    public void buscarHashtag() {
         String hashtagBuscado = campoHashtag.getText().trim();
         if (!hashtagBuscado.isEmpty()) {
             HashTag buscador = new HashTag(hashtagBuscado);
@@ -81,7 +82,7 @@ public class BuscarHashtag {
                 if (twit != null) {
                     JTextPane tweetPane = new JTextPane();
                     tweetPane.setEditable(false);
-                    tweetPane.setText(twit.getUsername() + " escribio: “ " + twit.getContenido() + " ” el " + twit.getFechapublicacion());
+                    tweetPane.setText(twit.getUsername() + " escribio: “ " + twit.getContenido() + " ” \npublicado el " + twit.getFechapublicacion() + ".");
                     tweetPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
                     StyledDocument doc = tweetPane.getStyledDocument();
@@ -109,7 +110,7 @@ public class BuscarHashtag {
                         }
                     }
 
-                    // Resaltar menciones (@)
+                    // aqui resaltar menciones
                     index = 0;
                     while (index < text.length()) {
                         int mencionInicio = text.indexOf("@", index);
@@ -118,7 +119,10 @@ public class BuscarHashtag {
                             if (mencionFin == -1) {
                                 mencionFin = text.length();
                             }
-                            doc.setCharacterAttributes(mencionInicio, mencionFin - mencionInicio, MencionesEstilo, false);
+                            String mencionadoExiste = text.substring(mencionInicio + 1, mencionFin);
+                            if(UsuarioManager.usuarioExiste(mencionadoExiste)){
+                                doc.setCharacterAttributes(mencionInicio, mencionFin - mencionInicio, MencionesEstilo, false);
+                            }
                             index = mencionFin;
                         } else {
                             index = text.length();

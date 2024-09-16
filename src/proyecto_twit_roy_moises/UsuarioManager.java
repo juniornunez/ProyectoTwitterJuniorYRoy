@@ -136,6 +136,11 @@ public class UsuarioManager {
     }
 
     public static String verTwettsUsuario(String username) {
+        // Verifica si la cuenta del usuario está activa
+        if (!UsuarioActivo(username)) {
+            return "La cuenta de este usuario está desactivada.";
+        }
+
         Twits twitsUsuario = obtenerTwitsUsuario(username);
         if (twitsUsuario == null) {
             return "No hay tweets.";
@@ -143,12 +148,20 @@ public class UsuarioManager {
 
         Twit[] listaTwits = twitsUsuario.getTwits();
         StringBuilder resultado = new StringBuilder();
+
+        // Recorremos los tweets y solo mostramos los del usuario específico si está activo
         for (int i = twitsUsuario.getNumeroTwits() - 1; i >= 0; i--) {
             Twit twit = listaTwits[i];
-            if (twit != null) {
+            if (twit != null && twit.getUsername().equals(username)) {  // Filtramos los tweets que no son del usuario
                 resultado.append(twit.getFechapublicacion()).append(" - ").append(twit.getContenido()).append("\n");
             }
         }
+
+        // Si no se encontraron tweets propios del usuario, mostramos un mensaje
+        if (resultado.length() == 0) {
+            return "No hay tweets.";
+        }
+
         return resultado.toString();
     }
 

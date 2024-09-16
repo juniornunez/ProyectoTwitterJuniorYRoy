@@ -316,7 +316,7 @@ public class PerfilVisual extends javax.swing.JFrame {
     }
 }
     private void SEGUIR_NOSEGUIRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SEGUIR_NOSEGUIRActionPerformed
-          // Actualizar el perfil una vez que el usuario sigue o deja de seguir a otro
+        // Actualizar el perfil una vez que el usuario sigue o deja de seguir a otro
     miPerfil.actualizarSeguidoresYSeguidosMiPerfil();  // Asegúrate de actualizar los contadores visuales
 
     if (manejoPerfil.sigueUsuario(usuarioActual, username)) {
@@ -328,13 +328,39 @@ public class PerfilVisual extends javax.swing.JFrame {
                 JOptionPane.WARNING_MESSAGE);
 
         if (confirmacion == JOptionPane.YES_OPTION) {
+            // Dejar de seguir al usuario
             manejoPerfil.dejarDeSeguirUsuario(usuarioActual, username);
+
+            // *** Eliminar los tweets del usuario dejado de seguir ***
+            Twits twitsSeguido = UsuarioManager.obtenerTwitsUsuario(username);
+            if (twitsSeguido != null) {
+                UsuarioManager.obtenerTwitsUsuario(usuarioActual).eliminarTwitsDeSeguido(username);
+            }
+
+            // Actualizar el timeline para reflejar los cambios
+            MenuPrincipal menu = MenuPrincipal.getMenu(usuarioActual);
+            menu.actualizarTimeline();  // Refrescar el timeline después de dejar de seguir
+
+            // Actualizar botones y contadores visuales
             actualizarBotonSeguir(username);
             miPerfil.actualizarListaUsuariosSeguidos(); // Actualizar lista de seguidos en MiPerfil
             actualizarSeguidoresYSeguidos();  // Actualizar seguidores y seguidos en PerfilVisual
         }
     } else {
+        // Seguir al usuario
         manejoPerfil.seguirUsuario(usuarioActual, username);
+
+        // Agregar los tweets del usuario seguido al timeline
+        Twits twitsSeguido = UsuarioManager.obtenerTwitsUsuario(username);
+        if (twitsSeguido != null) {
+            UsuarioManager.obtenerTwitsUsuario(usuarioActual).agregarTwitsDeSeguido(twitsSeguido);
+        }
+
+        // Actualizar el timeline para reflejar los cambios
+        //MenuPrincipal menu = MenuPrincipal.getMenu(usuarioActual);
+        //menu.actualizarTimeline();  // Refrescar el timeline después de seguir
+
+        // Actualizar botones y contadores visuales
         actualizarBotonSeguir(username);
         miPerfil.actualizarListaUsuariosSeguidos(); // Actualizar lista de seguidos en MiPerfil
         actualizarSeguidoresYSeguidos();  // Actualizar seguidores y seguidos en PerfilVisual

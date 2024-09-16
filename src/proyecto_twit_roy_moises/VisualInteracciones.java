@@ -24,11 +24,11 @@ public class VisualInteracciones {
 
     public VisualInteracciones(String UsuarioActual) {
         this.UsuarioActual = UsuarioActual;
-        initUI();
+        InicioDeInteracciones();
         mostrarInteracciones();
     }
 
-    private void initUI() {
+    private void InicioDeInteracciones() {
         frame = new JFrame("Interacciones");
         frame.setSize(600, 400);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -64,56 +64,59 @@ public class VisualInteracciones {
             Twit twit = todosLosTwits[mostrar];
             if (contieneMencion(twit.getContenido(), UsuarioActual)) {
                 hayMenciones = true;
-                
+
                 JTextPane twitPane = new JTextPane();
                 twitPane.setEditable(false);
-                twitPane.setText(twit.getUsername() + " te menciono : \"" + twit.getContenido() + "\" | Publicado el " + twit.getFechapublicacion() + ".");
-                
-                StyledDocument doc  =twitPane.getStyledDocument();
+                twitPane.setText(twit.getUsername() + " te menciono : \" " + twit.getContenido() + " \"  \nPublicado el " + twit.getFechapublicacion() + ".");
+
+                StyledDocument doc = twitPane.getStyledDocument();
                 Style hastagEstilo = twitPane.addStyle("hastagEstilo", null);
-                Style MencionEstilo = twitPane.addStyle("MencionEstilo", null);
-                
-                StyleConstants.setForeground(hastagEstilo, new Color(30,144,255));// azulito
-                StyleConstants.setBold(MencionEstilo, true);
-                StyleConstants.setForeground(MencionEstilo, Color.BLACK);
-                
-                
-                
+                Style mencionEstilo = twitPane.addStyle("mencionEstilo", null);
+
+                StyleConstants.setForeground(hastagEstilo, new Color(30, 144, 255)); // azulito
+                StyleConstants.setBold(mencionEstilo, true);
+                StyleConstants.setForeground(mencionEstilo, Color.BLACK);
+
                 String text = twitPane.getText();
+
+                // Resaltar hashtags primero
                 int index = 0;
-                
-                // aqui se resaltaran los hashtags
-                    while(index < text.length()){
-                        int HashtagInicia  = text.indexOf("#",index);
-                        if(HashtagInicia == -1){
-                            break;
-                        }
-                        
-                        int HashTagFin = text.indexOf(" ",HashtagInicia);
-                        if(HashTagFin == -1){
-                            HashTagFin = text.length();
-                        }
-                        doc.setCharacterAttributes(HashtagInicia , HashTagFin - HashtagInicia, hastagEstilo, false);
-                        index = HashTagFin;
-                        
-                        
-                        // aqui resaltamos para las menciones
-                        index = 0;
-                        while(index < text.length()){
-                            int MencionesInicia = text.indexOf("@",index);
-                            if(MencionesInicia == -1){
-                                break;
-                            }
-                            
-                            int MencionFinaliza = text.indexOf(" ",MencionesInicia);
-                            if(MencionFinaliza == -1){
-                                MencionFinaliza = text.length();
-                            }
-                            doc.setCharacterAttributes(MencionesInicia, MencionFinaliza - MencionesInicia, MencionEstilo, false);
-                            index = MencionFinaliza;
-                        }
+                while (index < text.length()) {
+                    int hashtagInicio = text.indexOf("#", index);
+                    if (hashtagInicio == -1) {
+                        break;
                     }
-                
+
+                    int hashtagFin = text.indexOf(" ", hashtagInicio);
+                    if (hashtagFin == -1) {
+                        hashtagFin = text.length();
+                    }
+
+                    doc.setCharacterAttributes(hashtagInicio, hashtagFin - hashtagInicio, hastagEstilo, false);
+                    index = hashtagFin;
+                }
+
+                // Resaltar menciones despues
+                // aqui se Reinicia el indx para resaltar menciones siuuu
+                index = 0;
+                while (index < text.length()) {
+                    // resaltar menciones aqui xd
+                    int MencionInicio = text.indexOf("@", index);
+                    if (MencionInicio != -1) {
+                        int MencionFin = text.indexOf(" ", MencionInicio);
+                        if (MencionFin == -1) {
+                            MencionFin = text.length();
+                        }
+                        String mencionadoExiste = text.substring(MencionInicio + 1, MencionFin); // substring para obtener el username del usuario.
+                        if (UsuarioManager.usuarioExiste(mencionadoExiste)) {
+                            doc.setCharacterAttributes(MencionInicio, MencionFin - MencionInicio, mencionEstilo, false); // aqui condicional para que si el usuario exite este se resaltara
+                        }
+                        index = MencionFin;
+                    } else {
+                        index = text.length();
+                    }
+                }
+
                 twitPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
                 panelInteracciones.add(twitPane);
             }

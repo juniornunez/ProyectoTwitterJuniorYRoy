@@ -18,7 +18,7 @@ public class MiPerfil extends javax.swing.JFrame {
         // Inicializar listModel aquí
         listModel = new DefaultListModel<>();
         usersxd.setModel(listModel);
-        jTextArea1.setEditable(false);
+        mistweets.setEditable(false);
 
         // Cargar otros datos del perfil
         cargarDatosPerfil(usuarioActual);
@@ -53,9 +53,9 @@ public class MiPerfil extends javax.swing.JFrame {
         FechaIngreso.setText("Fecha de Ingreso: " + fechaIngreso);
         usernamelbl.setText(username);
         Edadlbl.setText(edad + " años");
-        jTextArea1.setText(tweets);
-        jTextArea1.setLineWrap(true);  // Ajustar el texto para que se vea correctamente en líneas
-        jTextArea1.setWrapStyleWord(true);
+        mistweets.setText(tweets);
+        mistweets.setLineWrap(true);  // Ajustar el texto para que se vea correctamente en líneas
+        mistweets.setWrapStyleWord(true);
         
     }
 
@@ -185,9 +185,10 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
         jLabel4 = new javax.swing.JLabel();
         pfppersonal = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        mistweets = new javax.swing.JTextArea();
         jLabel5 = new javax.swing.JLabel();
         FechaIngreso = new javax.swing.JLabel();
+        activar_desactivarcuenta = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1000, 800));
@@ -231,13 +232,20 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
 
         jLabel4.setText("Username:");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        mistweets.setColumns(20);
+        mistweets.setRows(5);
+        jScrollPane2.setViewportView(mistweets);
 
         jLabel5.setText("Edad:");
 
         FechaIngreso.setText("jLabel6");
+
+        activar_desactivarcuenta.setText("Activar/Desactivar Cuenta");
+        activar_desactivarcuenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                activar_desactivarcuentaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -284,14 +292,18 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Volvermenuxd)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(buscarusuariobtn, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(Ingresaruser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(153, 153, 153)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(activar_desactivarcuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Volvermenuxd, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(46, 46, 46))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -339,82 +351,61 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
                                 .addComponent(buscarusuariobtn)))
                         .addGap(18, 67, Short.MAX_VALUE)
                         .addComponent(Volvermenuxd)))
-                .addGap(53, 53, 53))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(activar_desactivarcuenta)
+                .addGap(24, 24, 24))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void buscarusuariobtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarusuariobtnActionPerformed
-    String nombreUsuario = Ingresaruser.getText().trim(); // Aquí tomamos el nombre desde el campo de texto
+       String nombreUsuario = Ingresaruser.getText().trim(); // Aquí tomamos el nombre desde el campo de texto
 
     if (!nombreUsuario.isEmpty()) {
-        // Buscar todos los usuarios cuyo nombre contenga el texto ingresado
-        String[] usuariosEncontrados = manejoPerfil.BuscarUsuario(nombreUsuario);  // Buscar usuarios que contengan el texto
-        int index = UsuarioManager.obtenerIndiceUsuario(nombreUsuario);
-        
-        
-        
-        if (usuariosEncontrados.length > 0) {
-            DefaultListModel<String> listModel = new DefaultListModel<>();  // Modelo para la lista
 
-            for (String usuarioEncontrado : usuariosEncontrados) {
+        if (nombreUsuario.equals(usuarioActual)){
+            JOptionPane.showMessageDialog(this,"No puedes buscarte a ti mismo");
+            return;
+        }
+
+        // Buscar usuarios que coincidan o tengan similitud con el nombre ingresado
+        String[] usuariosSimilares = manejoPerfil.BuscarUsuario(nombreUsuario);
+
+        if (usuariosSimilares.length > 0) {
+            DefaultListModel<String> listModel = new DefaultListModel<>();
+
+            for (String usuario : usuariosSimilares) {
                 // Verificar si la cuenta está activa antes de mostrar el usuario
-                boolean estaActiva = UsuarioManager.UsuarioActivo(usuarioEncontrado);
+                boolean estaActiva = UsuarioManager.UsuarioActivo(usuario);
                 if (!estaActiva) {
-                    // Si la cuenta no está activa, no mostramos este usuario
+                    listModel.addElement(usuario + " [No existe :( ]");
                     continue;
                 }
-                // Verifica si el usuario actual sigue al usuario encontrado
-                boolean loSigo = manejoPerfil.sigueUsuario(usuarioActual, usuarioEncontrado);
+
+                // Verifica si el usuario actual sigue al otro usuario
+                boolean loSigo = manejoPerfil.sigueUsuario(usuarioActual, usuario);
 
                 // Usamos operador ternario para determinar si mostrar "LO SIGO" o "NO LO SIGO"
                 String estadoSeguimiento = loSigo ? "[LO SIGO]" : "[NO LO SIGO]";
 
-                // Agregar el usuario y su estado a la lista
-                listModel.addElement(usuarioEncontrado + " – " + estadoSeguimiento);
+                // Agregar el usuario y su estado de seguimiento a la lista
+                listModel.addElement(usuario + " " + estadoSeguimiento);
             }
 
-            // Mostrar la lista actualizada en el componente JList
-            usersxd.setModel(listModel); // Aquí mostramos los usuarios encontrados en la lista
+            // Mostrar los resultados en la lista
+            usersxd.setModel(listModel); // Aquí añadimos los usuarios encontrados a la lista
 
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontraron usuarios con ese nombre.");
+            JOptionPane.showMessageDialog(null, "No se encontraron usuarios con ese nombre o coincidencia.");
         }
+
     } else {
         JOptionPane.showMessageDialog(null, "Por favor, introduce un nombre de usuario.");
     }
-/**  String nombreUsuario = Ingresaruser.getText().trim(); // Aquí tomamos el nombre desde el campo de texto
 
-if (!nombreUsuario.isEmpty()) {
-    int index = UsuarioManager.obtenerIndiceUsuario(nombreUsuario);
     
-    if (index != -1) {
-        // Verificar si la cuenta está activa antes de mostrar el usuario
-        boolean estaActiva = UsuarioManager.UsuarioActivo(nombreUsuario);
-        if (!estaActiva) {
-            JOptionPane.showMessageDialog(this, "La cuenta de " + nombreUsuario + " no está activa.");
-            return; // Salimos del método si la cuenta está desactivada
-        }
 
-        // Verifica si el usuario actual sigue al otro usuario
-        boolean loSigo = manejoPerfil.sigueUsuario(usuarioActual, nombreUsuario);
-
-        // Usamos operador ternario para determinar si mostrar "LO SIGO" o "NO LO SIGO"
-        String estadoSeguimiento = loSigo ? "[LO SIGO]" : "[NO LO SIGO]";
-
-        // Si el usuario existe, agregarlo a la lista y mostrar su estado
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        listModel.addElement(nombreUsuario + " " + estadoSeguimiento);
-        usersxd.setModel(listModel); // Aquí añadimos el usuario encontrado a la lista
-
-    } else {
-        JOptionPane.showMessageDialog(null, "Usuario no encontrado.");
-    }
-} else {
-    JOptionPane.showMessageDialog(null, "Por favor, introduce un nombre de usuario.");
-}
-* **/
     }//GEN-LAST:event_buscarusuariobtnActionPerformed
 
     private void VolvermenuxdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VolvermenuxdActionPerformed
@@ -422,6 +413,30 @@ if (!nombreUsuario.isEmpty()) {
         menu.mostrarMenu();
         this.dispose();
     }//GEN-LAST:event_VolvermenuxdActionPerformed
+
+    private void activar_desactivarcuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activar_desactivarcuentaActionPerformed
+        int index = UsuarioManager.obtenerIndiceUsuario(usuarioActual); // Obtener el índice del usuario actual
+
+    if (index == -1) {
+        JOptionPane.showMessageDialog(this, "Error: Usuario no encontrado.");
+        return;
+    }
+
+    boolean estaActiva = UsuarioManager.UsuarioActivo(usuarioActual); // Verificar si la cuenta está activa o no
+
+    if (estaActiva) {
+        // Desactivar la cuenta
+        UsuarioManager.Cambiarestadocuenta(index, false);
+        UsuarioManager.eliminarSeguidosYSeguidores(usuarioActual);
+        JOptionPane.showMessageDialog(this, "Tu cuenta ha sido desactivada.");
+    } else {
+        // Activar la cuenta
+        UsuarioManager.Cambiarestadocuenta(index, true);
+        UsuarioManager.restaurarSeguidosYSeguidores(usuarioActual);
+        JOptionPane.showMessageDialog(this, "Tu cuenta ha sido activada.");
+    }
+
+    }//GEN-LAST:event_activar_desactivarcuentaActionPerformed
   
     /**
      * Acción para buscar un usuario y mostrar su perfil.
@@ -488,6 +503,7 @@ if (!nombreUsuario.isEmpty()) {
     private javax.swing.JTextField Ingresaruser;
     private javax.swing.JLabel Mistweetslbl;
     private javax.swing.JButton Volvermenuxd;
+    private javax.swing.JButton activar_desactivarcuenta;
     private javax.swing.JButton buscarusuariobtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -496,7 +512,7 @@ if (!nombreUsuario.isEmpty()) {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea mistweets;
     private javax.swing.JLabel numfollowers;
     private javax.swing.JLabel numfollowing;
     private javax.swing.JLabel pfppersonal;

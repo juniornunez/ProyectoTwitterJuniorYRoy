@@ -54,5 +54,34 @@ public class Twits {
     public HashTag[] getHash() {
         return hash;
     }
+    public void agregarTwitsDeSeguido(Twits twitsSeguido) {
+        // Asegurarnos de no sobrepasar el límite de tweets
+        for (int i = 0; i < twitsSeguido.getNumeroTwits() && numeroTwits < twits.length; i++) {
+            twits[numeroTwits] = twitsSeguido.getTwits()[i];
+            numeroTwits++;
+        }
+    }
+
+    public void eliminarTwitsDeSeguido(String usernameSeguido) {
+        int nuevoIndice = 0;
+
+        // Recorre los tweets actuales del usuario
+        for (int i = 0; i < numeroTwits; i++) {
+            Twit twit = twits[i];
+            // Si el tweet no pertenece al usuario que seguimos, lo mantenemos
+            if (twit != null && !twit.getUsername().equals(usernameSeguido)) {
+                twits[nuevoIndice] = twits[i];
+                nuevoIndice++;
+            }
+        }
+
+        // Actualiza el número de tweets
+        numeroTwits = nuevoIndice;
+
+        // Limpia el espacio restante en el arreglo
+        for (int i = nuevoIndice; i < twits.length; i++) {
+            twits[i] = null;
+        }
+    }
 
 }

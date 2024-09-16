@@ -22,7 +22,7 @@ public class CrearCuenta {
     private JTextField fechaIngresoField; // Campo para mostrar la fecha de ingreso
     private JButton generarFechaButton; // Botón para generar la fecha de ingreso
     LogIn log;
-
+    private String usuarioActual;
     private String[] usernames;
 
     public CrearCuenta() {
@@ -202,4 +202,4 @@ private void jButton1ActionPerformed() {
         JOptionPane.showMessageDialog(null, "El usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-}
+}//String usuarioActual;
