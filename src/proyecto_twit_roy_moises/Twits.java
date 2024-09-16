@@ -54,6 +54,33 @@ public class Twits {
     public HashTag[] getHash() {
         return hash;
     }
+    
+     public void eliminarTwitsDeUsuario(String seguido) {
+        for (int i = 0; i < numeroTwits; i++) {
+            if (twits[i] != null && twits[i].getUsername().equals(seguido)) {
+                // Mover los tweets hacia la izquierda para sobreescribir el eliminado
+                for (int j = i; j < numeroTwits - 1; j++) {
+                    twits[j] = twits[j + 1];
+                }
+                twits[numeroTwits - 1] = null;  // Eliminar el último tweet
+                numeroTwits--;  // Reducir el contador de tweets
+                i--;  // Volver a verificar el nuevo tweet en la misma posición
+            }
+        }
+    }
+
+    public void agregarTwitsDeUsuario(Twits twitsSeguido) {
+        for (int i = 0; i < twitsSeguido.getNumeroTwits(); i++) {
+            if (twitsSeguido.getTwits()[i] != null) {
+                // Solo agregamos si hay espacio en el arreglo
+                if (numeroTwits < twits.length) {
+                    twits[numeroTwits] = twitsSeguido.getTwits()[i];
+                    numeroTwits++;
+                }
+            }
+        }
+    }
+    
     public void agregarTwitsDeSeguido(Twits twitsSeguido) {
         // Asegurarnos de no sobrepasar el límite de tweets
         for (int i = 0; i < twitsSeguido.getNumeroTwits() && numeroTwits < twits.length; i++) {

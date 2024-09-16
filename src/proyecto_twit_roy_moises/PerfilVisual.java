@@ -357,8 +357,8 @@ public class PerfilVisual extends javax.swing.JFrame {
         }
 
         // Actualizar el timeline para reflejar los cambios
-        //MenuPrincipal menu = MenuPrincipal.getMenu(usuarioActual);
-        //menu.actualizarTimeline();  // Refrescar el timeline después de seguir
+        MenuPrincipal menu = MenuPrincipal.getMenu(usuarioActual);
+        menu.actualizarTimeline();  // Refrescar el timeline después de seguir
 
         // Actualizar botones y contadores visuales
         actualizarBotonSeguir(username);

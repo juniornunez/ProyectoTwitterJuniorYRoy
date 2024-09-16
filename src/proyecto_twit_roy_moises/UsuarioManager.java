@@ -191,6 +191,21 @@ public class UsuarioManager {
 
     return true;
 }
+   
+   public static void eliminarTwitsDeSeguido(String usuarioActual, String seguido) {
+    Twits twitsUsuarioActual = obtenerTwitsUsuario(usuarioActual);
+    if (twitsUsuarioActual != null) {
+        twitsUsuarioActual.eliminarTwitsDeUsuario(seguido);
+    }
+}
+   
+   public static void agregarTwitsDeSeguido(String usuarioActual, String seguido) {
+    Twits twitsUsuarioActual = obtenerTwitsUsuario(usuarioActual);
+    Twits twitsSeguido = obtenerTwitsUsuario(seguido);
+    if (twitsUsuarioActual != null && twitsSeguido != null) {
+        twitsUsuarioActual.agregarTwitsDeUsuario(twitsSeguido);
+    }
+}
 
 public static boolean dejarDeSeguirUsuario(String usuarioActual, String usuarioADejar) {
     int indiceActual = obtenerIndiceUsuario(usuarioActual);
@@ -199,6 +214,7 @@ public static boolean dejarDeSeguirUsuario(String usuarioActual, String usuarioA
     if (indiceActual == -1 || indiceObjetivo == -1) {
         return false; // Si alguno de los usuarios no existe
     }
+    
 
     // Buscar y eliminar de la lista de seguidos
     for (int i = 0; i < numSeguidos[indiceActual]; i++) {
@@ -261,6 +277,67 @@ public static int obtenerNumSeguidos(String username) {
         System.arraycopy(seguidos[indiceActual], 0, usuariosSeguidos, 0, numSeguidos[indiceActual]);
         return usuariosSeguidos;
     }
+     public static void desactivarCuenta(String username) {
+    int index = obtenerIndiceUsuario(username);
+    
+    if (index != -1) {
+        // Cambiar el estado de la cuenta a inactiva
+        estadosActivacion[index] = false;
+        
+        // Eliminar los tweets del usuario en los timelines de sus seguidores
+        eliminarTwitsDeUsuarioEnSeguidores(username);
+        
+        // Eliminar a todos sus seguidores y seguidos (guardar en copia para posible restauración)
+        eliminarSeguidosYSeguidores(username);
+    }
+}
+     public static void activarCuenta(String username) {
+    int index = obtenerIndiceUsuario(username);
+
+    if (index != -1) {
+        // Cambiar el estado de la cuenta a activa
+        estadosActivacion[index] = true;
+
+        // Restaurar seguidores y seguidos
+        restaurarSeguidosYSeguidores(username);
+    }
+}
+     public static void eliminarTwitsDeUsuarioEnSeguidores(String username) {
+    int indexUsuario = obtenerIndiceUsuario(username);
+
+    if (indexUsuario != -1) {
+        // Recorre a todos los seguidores del usuario
+        for (int i = 0; i < numSeguidores[indexUsuario]; i++) {
+            String seguidor = seguidores[indexUsuario][i];
+            int indexSeguidor = obtenerIndiceUsuario(seguidor);
+
+            if (indexSeguidor != -1) {
+                // Eliminar los tweets del usuario desactivado en el timeline del seguidor
+                Twits twitsSeguidor = obtenerTwitsUsuario(seguidor);
+                if (twitsSeguidor != null) {
+                    twitsSeguidor.eliminarTwitsDeUsuario(username);
+                }
+            }
+        }
+    }
+}
+     public static String[] buscarUsuariosActivos(String nombreUsuario) {
+    String[] resultado = new String[contador];
+    int resultadoContador = 0;
+
+    for (int i = 0; i < contador; i++) {
+        // Verificar si el username contiene el texto buscado y la cuenta está activa
+        if (usernames[i] != null && usernames[i].contains(nombreUsuario) && estadosActivacion[i]) {
+            resultado[resultadoContador] = usernames[i];
+            resultadoContador++;
+        }
+    }
+
+    // Devolver solo los resultados encontrados
+    String[] usuariosEncontrados = new String[resultadoContador];
+    System.arraycopy(resultado, 0, usuariosEncontrados, 0, resultadoContador);
+    return usuariosEncontrados;
+}
     
 
     // Eliminar todos los seguidos y seguidores cuando se desactiva la cuenta

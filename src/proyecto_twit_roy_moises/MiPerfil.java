@@ -415,24 +415,16 @@ private void dejarDeSeguirUsuario(String usernameADejar) {
     }//GEN-LAST:event_VolvermenuxdActionPerformed
 
     private void activar_desactivarcuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activar_desactivarcuentaActionPerformed
-        int index = UsuarioManager.obtenerIndiceUsuario(usuarioActual); // Obtener el índice del usuario actual
-
-    if (index == -1) {
-        JOptionPane.showMessageDialog(this, "Error: Usuario no encontrado.");
-        return;
-    }
-
-    boolean estaActiva = UsuarioManager.UsuarioActivo(usuarioActual); // Verificar si la cuenta está activa o no
-
-    if (estaActiva) {
+         // Obtener el estado actual de la cuenta
+    boolean cuentaActiva = UsuarioManager.UsuarioActivo(usuarioActual);
+    
+    if (cuentaActiva) {
         // Desactivar la cuenta
-        UsuarioManager.Cambiarestadocuenta(index, false);
-        UsuarioManager.eliminarSeguidosYSeguidores(usuarioActual);
+        UsuarioManager.desactivarCuenta(usuarioActual);
         JOptionPane.showMessageDialog(this, "Tu cuenta ha sido desactivada.");
     } else {
         // Activar la cuenta
-        UsuarioManager.Cambiarestadocuenta(index, true);
-        UsuarioManager.restaurarSeguidosYSeguidores(usuarioActual);
+        UsuarioManager.activarCuenta(usuarioActual);
         JOptionPane.showMessageDialog(this, "Tu cuenta ha sido activada.");
     }
 
